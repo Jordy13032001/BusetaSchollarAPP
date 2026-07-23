@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.BusetaEscolarApp"
+        tools:targetApi="31">
+        
+        <activity
+            android:name=".padre.AddChildActivity"
+            android:exported="false" />
+            
+        <activity
+            android:name=".padre.SelectLocationActivity"
+            android:exported="false" />
+        
+        <activity
+            android:name=".padre.PadreHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chofer.AsistenciaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chofer.MapaChoferActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chofer.ResumenViajeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chofer.IncidenteChoferActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chofer.ChoferHomeActivity"
+            android:exported="false" />
+        <!-- Login Activity (Launcher) -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BusetaEscolarApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".RegistroActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BusetaEscolarApp" />
+        
+        <!-- Padre Main Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BusetaEscolarApp" />
+        
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+        <activity
+            android:name=".padre.NotificacionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".padre.RutaCompletaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".padre.PerfilNinoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".padre.IncidenteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".padre.SolicitudChoferActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminDashboardActivity"
+            android:exported="true" />
+            
+        <activity
+            android:name=".admin.AdminSolicitudesActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>

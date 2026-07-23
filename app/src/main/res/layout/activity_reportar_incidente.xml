@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FDFDFD">
+
+    <!-- 1. TOOLBAR ROJA -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarReportar"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:background="#FF1744"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Reportar incidente"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- CONTENIDO DESPLAZABLE (Ajustado para terminar arriba del menú) -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarReportar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tipo de incidente"
+                android:textColor="#212121"
+                android:textStyle="bold" />
+
+            <!-- Selector de Incidentes (Grid) -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:columnCount="4"
+                android:rowCount="1">
+
+                <LinearLayout style="@style/IncidentOption">
+                    <ImageView android:src="@android:drawable/ic_menu_directions" app:tint="#757575" style="@style/IncidentIcon" />
+                    <TextView android:text="Tráfico" style="@style/IncidentText" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/IncidentOption" android:background="@drawable/bg_incident_selected">
+                    <ImageView android:src="@android:drawable/ic_delete" app:tint="@android:color/white" style="@style/IncidentIcon" />
+                    <TextView android:text="Accidente" android:textColor="@android:color/white" style="@style/IncidentText" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/IncidentOption">
+                    <ImageView android:src="@android:drawable/ic_menu_recent_history" app:tint="#757575" style="@style/IncidentIcon" />
+                    <TextView android:text="Retraso" style="@style/IncidentText" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/IncidentOption">
+                    <ImageView android:src="@android:drawable/ic_menu_more" app:tint="#757575" style="@style/IncidentIcon" />
+                    <TextView android:text="Otro" style="@style/IncidentText" />
+                </LinearLayout>
+            </GridLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Mensaje"
+                android:textColor="#212121"
+                android:textStyle="bold" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="8dp"
+                android:background="@android:drawable/editbox_background_normal"
+                android:gravity="top"
+                android:padding="12dp"
+                android:text="Accidente menor en la vía, hay retraso aproximado de 15 minutos."
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Ubicación actual"
+                android:textColor="#212121"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#F5F5F5"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    app:tint="#FBC02D" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Av. Principal con Calle 45"
+                    android:textColor="#424242"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="#FF1744"
+                android:text="Enviar alerta"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:cornerRadius="15dp"
+                app:icon="@android:drawable/ic_menu_send" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Se notificará a los padres y se enviará\nla ubicación por WhatsApp."
+                android:textColor="#757575"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- BARRA DE NAVEGACIÓN INFERIOR (5 OPCIONES) -->
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@android:color/white"
+        android:elevation="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- 1. INICIO -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_today" app:tint="#757575" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Inicio" android:textColor="#757575" android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- 2. ASISTENCIA -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#757575" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asistencia" android:textColor="#757575" android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- 3. MAPA -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_directions" app:tint="#757575" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mapa" android:textColor="#757575" android:textSize="9sp" />
+        </LinearLayout>
+
+        <!-- 4. INCIDENTE (Activo) -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_dialog_alert" app:tint="#D32F2F" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Incidente" android:textColor="#D32F2F" android:textSize="9sp" android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 5. RESUMEN -->
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_sort_by_size" app:tint="#757575" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Resumen" android:textColor="#757575" android:textSize="9sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

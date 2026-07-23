@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(powershell -Command 'Get-Service | Where-Object {$_.Name -like '\\\\''*postgres*'\\\\''} | Select-Object Name,Status')",
+      "Bash(PGPASSWORD='Zeus-2001' psql -U postgres -h localhost -p 5432 -c \"SELECT 1;\")",
+      "Bash(PGPASSWORD='Zeus-2001' \"/c/Program Files/PostgreSQL/17/bin/psql.exe\" -U postgres -h localhost -p 5432 -c \"SELECT 1;\")",
+      "Bash(PGPASSWORD='123456789' \"/c/Program Files/PostgreSQL/17/bin/psql.exe\" -U postgres -h localhost -p 5432 -c \"SELECT 1;\")",
+      "Bash(PGPASSWORD='123456789' \"/c/Program Files/PostgreSQL/17/bin/psql.exe\" -U postgres -h localhost -p 5432 -lqt)",
+      "Bash(PGPASSWORD='123456789' \"/c/Program Files/PostgreSQL/17/bin/psql.exe\" -U postgres -h localhost -p 5432 -c \"CREATE DATABASE buseta_db;\")",
+      "Bash(node server.js)",
+      "Bash(disown)",
+      "Bash(cat /tmp_server.log)",
+      "Bash(set -e)",
+      "Bash(curl -s -X POST __TRACKED_VAR__/registro -H 'Content-Type: application/json' -d '{\"name\":\"Ana Padre\",\"email\":\"ana@test.com\",\"password\":\"1234\",\"role\":\"padre\"}')",
+      "Bash(curl -s -X POST __TRACKED_VAR__/registro -H 'Content-Type: application/json' -d '{\"name\":\"Carlos Chofer\",\"email\":\"carlos@test.com\",\"password\":\"1234\",\"role\":\"chofer\"}')",
+      "Bash(curl -s -X POST __TRACKED_VAR__/login -H 'Content-Type: application/json' -d '{\"email\":\"ana@test.com\",\"password\":\"1234\"}')",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' -X POST __TRACKED_VAR__/login -H 'Content-Type: application/json' -d '{\"email\":\"ana@test.com\",\"password\":\"wrong\"}')",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,StartTime,Path\")",
+      "Bash(netstat -ano)",
+      "Bash(powershell -Command \"Stop-Process -Id 26600 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/registro -H 'Content-Type: application/json' -d '{\"name\":\"Ana Padre\",\"email\":\"ana@test.com\",\"password\":\"1234\",\"role\":\"padre\"}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/registro -H 'Content-Type: application/json' -d '{\"name\":\"Carlos Chofer\",\"email\":\"carlos@test.com\",\"password\":\"1234\",\"role\":\"chofer\"}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/login -H 'Content-Type: application/json' -d '{\"email\":\"ana@test.com\",\"password\":\"1234\"}')",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' -X POST http://localhost:3000/api/login -H 'Content-Type: application/json' -d '{\"email\":\"ana@test.com\",\"password\":\"wrong\"}')",
+      "Bash(curl -s http://localhost:3000/api/choferes)",
+      "Bash(./gradlew.bat assembleDebug --console=plain)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,StartTime\")",
+      "Bash(powershell -Command 'Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.IPAddress -notlike '\\\\''169.254.*'\\\\'' -and $_.IPAddress -ne '\\\\''127.0.0.1'\\\\''} | Select-Object IPAddress, InterfaceAlias')",
+      "Bash(powershell -Command 'Get-NetFirewallRule -Direction Inbound -Enabled True | Where-Object {$_.DisplayName -like '\\\\''*node*'\\\\'' -or $_.DisplayName -like '\\\\''*3000*'\\\\''} | Select-Object DisplayName, Action')",
+      "Bash(powershell -Command \"Get-NetFirewallProfile | Select-Object Name, Enabled\")",
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)"
+    ]
+  }
+}

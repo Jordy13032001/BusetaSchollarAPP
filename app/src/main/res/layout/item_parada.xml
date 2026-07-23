@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/StopItemStyle"
+    android:id="@+id/containerParada"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tvNombreParada"
+        style="@style/StopTextStyle"
+        android:text="1. Casa de Juan Pérez" />
+
+    <TextView
+        android:id="@+id/tvHoraParada"
+        style="@style/TimeTextStyle"
+        android:layout_alignParentEnd="true"
+        android:text="7:15 AM" />
+
+</RelativeLayout>

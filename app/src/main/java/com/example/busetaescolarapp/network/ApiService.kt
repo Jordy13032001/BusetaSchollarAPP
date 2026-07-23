@@ -1,0 +1,209 @@
+package com.example.busetaescolarapp.network
+
+import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.POST
+import retrofit2.http.GET
+import retrofit2.http.Path
+
+// Modelos de datos para las peticiones y respuestas
+data class RegistroRequest(
+    val name: String,
+    val email: String,
+    val password: String,
+    val role: String
+)
+
+data class DriverRequest(
+    val email: String,
+    val placa: String,
+    val modelo: String,
+    val capacidad: Int,
+    val tarifa_mensual: Double
+)
+
+data class ApiResponse(
+    val message: String?,
+    val error: String?,
+    val user: User?
+)
+
+data class User(
+    val id: Int,
+    val name: String,
+    val email: String,
+    val phone: String?,
+    val role: String,
+    val roles: List<String> = emptyList()
+)
+
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+data class ChoferResponse(
+    val id_chofer: Int,
+    val nombre_completo: String,
+    val correo: String,
+    val tarifa_mensual: Double,
+    val placa: String?,
+    val modelo: String?
+)
+
+data class SolicitudResponse(
+    val id_solicitud: Int,
+    val nombre_completo: String,
+    val correo: String,
+    val placa: String,
+    val modelo: String,
+    val capacidad: Int,
+    val tarifa_mensual: Double,
+    val fecha_creacion: String
+)
+
+data class EstudianteRequest(
+    val nombre_completo: String,
+    val direccion: String,
+    val lat: Double?,
+    val lng: Double?,
+    val correo_padre: String,
+    val correo_chofer: String
+)
+
+data class EstudianteResponse(
+    val id_estudiante: Int,
+    val nombre_completo: String,
+    val direccion: String,
+    val hora_estimada: String?,
+    val lat: Double?,
+    val lng: Double?,
+    val correo_padre: String,
+    val correo_chofer: String,
+    val subio: Boolean?
+)
+
+data class NotificationResponse(
+    val id: Int,
+    val title: String,
+    val message: String,
+    val timestamp: String,
+    val type: String,
+    val parent_email: String
+)
+
+data class IncidentRequest(
+    val description: String,
+    val parent_email: String
+)
+
+data class IncidentResponse(
+    val id_incidente: Int,
+    val mensaje: String,
+    val estado: String,
+    val fecha_hora: String
+)
+
+data class DriverLocationRequest(
+    val driver_email: String,
+    val lat: Double,
+    val lng: Double,
+    val id_viaje: Int
+)
+
+data class DriverLocationResponse(
+    val driver_email: String,
+    val lat: Double,
+    val lng: Double,
+    val updated_at: String
+)
+
+data class ViajeResponse(
+    val id_viaje: Int,
+    val id_ruta: Int,
+    val fecha: String,
+    val estado: String,
+    val total: Int,
+    val subieron: Int,
+    val no_subieron: Int
+)
+
+data class AsistenciaRequest(
+    val id_estudiante: Int,
+    val subio: Boolean,
+    val motivo: String? = null
+)
+
+data class FinalizarRequest(
+    val fecha_celular: String
+)
+
+data class AsistenciaResponse(
+    val id_asistencia: Int,
+    val id_viaje: Int,
+    val id_estudiante: Int,
+    val subio: Boolean,
+    val hora_registro: String,
+    val motivo: String?,
+    val observacion: String?
+)
+
+interface ApiService {
+    @POST("registro")
+    fun registerUser(@Body request: RegistroRequest): Call<ApiResponse>
+
+    @POST("unirse-conductor")
+    fun joinAsDriver(@Body request: DriverRequest): Call<ApiResponse>
+
+    @POST("login")
+    fun login(@Body request: LoginRequest): Call<ApiResponse>
+
+    @GET("choferes")
+    fun getChoferes(): Call<List<ChoferResponse>>
+
+    @POST("estudiantes")
+    fun addEstudiante(@Body request: EstudianteRequest): Call<ApiResponse>
+
+    @GET("chofer/{correo}/ruta")
+    fun getRuta(@Path("correo") driverEmail: String): Call<List<EstudianteResponse>>
+
+    @GET("padre/{correo}/hijos")
+    fun getParentChildren(@Path("correo") parentEmail: String): Call<List<EstudianteResponse>>
+
+    @GET("notificaciones/{parent_email}")
+    fun getNotifications(@Path("parent_email") parentEmail: String): Call<List<NotificationResponse>>
+
+    @POST("incidentes")
+    fun reportIncident(@Body request: IncidentRequest): Call<IncidentResponse>
+
+    @GET("incidentes/{parent_email}")
+    fun getIncidents(@Path("parent_email") parentEmail: String): Call<List<IncidentResponse>>
+
+    @POST("chofer/ubicacion")
+    fun updateDriverLocation(@Body request: DriverLocationRequest): Call<DriverLocationResponse>
+
+    @GET("chofer/ubicacion/{driver_email}")
+    fun getDriverLocation(@Path("driver_email") driverEmail: String): Call<DriverLocationResponse>
+
+    @POST("chofer/{correo}/viajes/iniciar")
+    fun iniciarViaje(@Path("correo") driverEmail: String): Call<ViajeResponse>
+
+    @POST("chofer/{correo}/viajes/finalizar")
+    fun finalizarViaje(@Path("correo") driverEmail: String, @Body request: FinalizarRequest): Call<ViajeResponse>
+
+    @GET("chofer/{correo}/viajes/actual")
+    fun getViajeActual(@Path("correo") driverEmail: String): Call<ViajeResponse>
+
+    @POST("viajes/{id_viaje}/asistencia")
+    fun marcarAsistencia(@Path("id_viaje") idViaje: Int, @Body request: AsistenciaRequest): Call<AsistenciaResponse>
+
+    // ADMIN ENDPOINTS
+    @GET("solicitudes")
+    fun getSolicitudesPendientes(): Call<List<SolicitudResponse>>
+
+    @POST("solicitudes/{id}/aprobar")
+    fun aprobarSolicitud(@Path("id") id: Int): Call<ApiResponse>
+
+    @POST("solicitudes/{id}/rechazar")
+    fun rechazarSolicitud(@Path("id") id: Int): Call<ApiResponse>
+}

@@ -3,6 +3,7 @@ package com.example.busetaescolarapp.network
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -48,7 +49,30 @@ data class ChoferResponse(
     val correo: String,
     val tarifa_mensual: Double,
     val placa: String?,
-    val modelo: String?
+    val modelo: String?,
+    // Ruta que definió el chofer: el padre la revisa antes de contratarlo
+    val nombre_ruta: String?,
+    val turno: String?,
+    val sectores: String?,
+    val hora_salida: String?,
+    val colegio: String?
+)
+
+data class RutaInfoResponse(
+    val id_ruta: Int,
+    val nombre: String,
+    val turno: String,
+    val sectores: String?,
+    val hora_salida: String?,
+    val colegio: String?,
+    val id_colegio: Int?
+)
+
+data class RutaInfoRequest(
+    val nombre: String,
+    val turno: String,
+    val sectores: String?,
+    val hora_salida: String?
 )
 
 data class SolicitudResponse(
@@ -80,7 +104,9 @@ data class EstudianteResponse(
     val lng: Double?,
     val correo_padre: String,
     val correo_chofer: String,
-    val subio: Boolean?
+    val subio: Boolean?,
+    val estado: String? = null,
+    val nombre_chofer: String? = null
 )
 
 data class NotificationResponse(
@@ -166,6 +192,26 @@ interface ApiService {
 
     @GET("chofer/{correo}/ruta")
     fun getRuta(@Path("correo") driverEmail: String): Call<List<EstudianteResponse>>
+
+    // Solicitudes de estudiantes que el chofer debe aceptar o rechazar
+    @GET("chofer/{correo}/estudiantes/solicitudes")
+    fun getSolicitudesEstudiantes(@Path("correo") driverEmail: String): Call<List<EstudianteResponse>>
+
+    @POST("estudiantes/{id}/aceptar")
+    fun aceptarEstudiante(@Path("id") idEstudiante: Int): Call<ApiResponse>
+
+    @POST("estudiantes/{id}/rechazar")
+    fun rechazarEstudiante(@Path("id") idEstudiante: Int): Call<ApiResponse>
+
+    // Ruta descriptiva del chofer
+    @GET("chofer/{correo}/ruta-info")
+    fun getRutaInfo(@Path("correo") driverEmail: String): Call<RutaInfoResponse>
+
+    @PUT("chofer/{correo}/ruta-info")
+    fun updateRutaInfo(
+        @Path("correo") driverEmail: String,
+        @Body request: RutaInfoRequest
+    ): Call<ApiResponse>
 
     @GET("padre/{correo}/hijos")
     fun getParentChildren(@Path("correo") parentEmail: String): Call<List<EstudianteResponse>>

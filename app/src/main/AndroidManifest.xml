@@ -33,9 +33,12 @@
         <activity
             android:name=".chofer.AsistenciaActivity"
             android:exported="false" />
+        <!-- Pantallas del chofer en vertical: se usan manejando y no deben recrearse
+             a mitad de la confirmación de asistencia por voz. -->
         <activity
             android:name=".chofer.MapaChoferActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".chofer.ResumenViajeActivity"
             android:exported="false" />
@@ -44,7 +47,16 @@
             android:exported="false" />
         <activity
             android:name=".chofer.ChoferHomeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".chofer.DefinirRutaActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".chofer.SolicitudesEstudiantesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <!-- Login Activity (Launcher) -->
         <activity
             android:name=".LoginActivity"
@@ -70,7 +82,7 @@
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}" />
+            android:value="AIzaSyCDvCs3lZrLnN8sprlr0MybiDKcuFf7jIQ"/>
         <activity
             android:name=".padre.NotificacionesActivity"
             android:exported="false" />

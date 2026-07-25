@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.busetaescolarapp.MainActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,15 +12,13 @@ import com.example.busetaescolarapp.R
 import com.example.busetaescolarapp.NavigationUtils
 
 import android.widget.Toast
-import com.example.busetaescolarapp.network.ApiClient
-import com.example.busetaescolarapp.network.NotificationResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.busetaescolarapp.data.local.NotificacionEntity
+import com.example.busetaescolarapp.ui.viewmodel.PadreViewModel
 
 class NotificacionesActivity : AppCompatActivity() {
     private lateinit var recycler: RecyclerView
     private lateinit var parentEmail: String
+    private lateinit var viewModel: PadreViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,12 +26,19 @@ class NotificacionesActivity : AppCompatActivity() {
 
         recycler = findViewById(R.id.recyclerNotificaciones)
         recycler.layoutManager = LinearLayoutManager(this)
-        
+
         val sessionManager = com.example.busetaescolarapp.utils.SessionManager(this)
         parentEmail = sessionManager.getUserEmail() ?: ""
 
+        viewModel = ViewModelProvider(this)[PadreViewModel::class.java]
+
         if (parentEmail.isNotEmpty()) {
-            fetchNotifications()
+            // Room es la fuente de la UI: se actualiza sola en cuanto llegan datos nuevos
+            viewModel.notificaciones(parentEmail).observe(this) { entities ->
+                recycler.adapter = NotificacionAdapter(entities.map { it.toDomain() })
+            }
+            // Dispara la sincronización con el backend (si falla, queda lo último guardado en Room)
+            viewModel.sincronizarNotificaciones(parentEmail)
         } else {
             Toast.makeText(this, "Error de sesión", Toast.LENGTH_SHORT).show()
         }
@@ -43,25 +49,12 @@ class NotificacionesActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchNotifications() {
-        ApiClient.apiService.getNotifications(parentEmail).enqueue(object : Callback<List<NotificationResponse>> {
-            override fun onResponse(call: Call<List<NotificationResponse>>, response: Response<List<NotificationResponse>>) {
-                if (response.isSuccessful) {
-                    val notifications = response.body() ?: emptyList()
-                    val mappedList = notifications.map {
-                        val typeEnum = try {
-                            TipoNotificacion.valueOf(it.type)
-                        } catch (e: Exception) {
-                            TipoNotificacion.CERCA
-                        }
-                        Notificacion(it.title, it.message, it.timestamp, typeEnum)
-                    }
-                    recycler.adapter = NotificacionAdapter(mappedList)
-                }
-            }
-            override fun onFailure(call: Call<List<NotificationResponse>>, t: Throwable) {
-                Toast.makeText(this@NotificacionesActivity, "Error de red", Toast.LENGTH_SHORT).show()
-            }
-        })
+    private fun NotificacionEntity.toDomain(): Notificacion {
+        val typeEnum = try {
+            TipoNotificacion.valueOf(tipo)
+        } catch (e: Exception) {
+            TipoNotificacion.CERCA
+        }
+        return Notificacion(titulo, mensaje, hora, typeEnum)
     }
 }

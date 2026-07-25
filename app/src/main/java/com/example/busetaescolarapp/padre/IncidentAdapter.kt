@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.busetaescolarapp.R
-import com.example.busetaescolarapp.network.IncidentResponse
+import com.example.busetaescolarapp.data.local.IncidenteEntity
 
-class IncidentAdapter(private val incidents: List<IncidentResponse>) :
+class IncidentAdapter(private val incidents: List<IncidenteEntity>) :
     RecyclerView.Adapter<IncidentAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -27,7 +27,7 @@ class IncidentAdapter(private val incidents: List<IncidentResponse>) :
         val incident = incidents[position]
         holder.tvDescription.text = incident.mensaje
         holder.tvStatus.text = "Estado: ${incident.estado}"
-        holder.tvDate.text = incident.fecha_hora
+        holder.tvDate.text = incident.fechaHora
     }
 
     override fun getItemCount() = incidents.size

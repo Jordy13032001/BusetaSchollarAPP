@@ -2,6 +2,7 @@ package com.example.busetaescolarapp.utils
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import java.util.Locale
 
@@ -35,6 +36,30 @@ object TextToSpeechManager : TextToSpeech.OnInitListener {
         } else {
             Log.e("TTS", "TTS no ha sido inicializado aún. Intentando hablar: $text")
         }
+    }
+
+    /**
+     * Habla y avisa exactamente cuando termina, para no empezar a escuchar mientras
+     * el propio audio del bot todavía suena (eso es lo que hacía fallar el reconocimiento de voz).
+     */
+    fun speak(text: String, onDone: () -> Unit) {
+        if (!isInitialized) {
+            Log.e("TTS", "TTS no ha sido inicializado aún. Intentando hablar: $text")
+            onDone()
+            return
+        }
+        val utteranceId = System.currentTimeMillis().toString()
+        tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {}
+            override fun onDone(utteranceId: String?) {
+                onDone()
+            }
+            @Deprecated("Deprecated in Java")
+            override fun onError(utteranceId: String?) {
+                onDone()
+            }
+        })
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
     }
 
     fun stop() {

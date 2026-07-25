@@ -15,14 +15,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.busetaescolarapp.NavigationUtils
 import com.example.busetaescolarapp.NotificationHelper
 import com.example.busetaescolarapp.R
+import com.example.busetaescolarapp.data.repository.ChoferRepository
+import com.example.busetaescolarapp.data.repository.RutaRepository
 import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.EstudianteResponse
 import com.example.busetaescolarapp.network.ViajeResponse
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,6 +45,7 @@ class ChoferHomeActivity : AppCompatActivity() {
     private val presentIds = mutableSetOf<Int>()
     private var presentKidsCount = 0
     private lateinit var viewModel: com.example.busetaescolarapp.ui.viewmodel.ChoferViewModel
+    private lateinit var rutaRepository: RutaRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +54,7 @@ class ChoferHomeActivity : AppCompatActivity() {
         com.example.busetaescolarapp.utils.TextToSpeechManager.init(this)
         com.example.busetaescolarapp.utils.VoiceRecognitionManager.init(this)
         viewModel = androidx.lifecycle.ViewModelProvider(this).get(com.example.busetaescolarapp.ui.viewmodel.ChoferViewModel::class.java)
+        rutaRepository = RutaRepository(applicationContext)
 
         NotificationHelper.createNotificationChannel(this)
 
@@ -82,7 +88,22 @@ class ChoferHomeActivity : AppCompatActivity() {
         tvDriverName.text = "Bienvenido, $driverName"
 
         NavigationUtils.setupChoferBottomNavigation(this)
-        
+
+        // La confirmación de voz ocurre en MapaChoferActivity (pantalla visible durante el viaje);
+        // aquí solo escuchamos el resultado para mantener esta lista de asistencia sincronizada.
+        DriverTracker.onAsistenciaRegistrada = { index, subio ->
+            runOnUiThread {
+                val child = childrenList.getOrNull(index)
+                if (subio && child != null && !presentIds.contains(child.id_estudiante)) {
+                    presentKidsCount++
+                    tvKidsCount.text = "${childrenList.size} / $presentKidsCount"
+                    presentChildrenList.add(child)
+                    presentIds.add(child.id_estudiante)
+                    rvAsistencia.adapter?.notifyItemInserted(presentChildrenList.size - 1)
+                }
+            }
+        }
+
         viewModel.ruta.observe(this) { ruta ->
             childrenList = ruta
             presentChildrenList.clear()
@@ -131,6 +152,14 @@ class ChoferHomeActivity : AppCompatActivity() {
             rvAsistencia.adapter = resetAdapter
         }
         
+        findViewById<androidx.cardview.widget.CardView>(R.id.cardMiRuta)?.setOnClickListener {
+            startActivity(android.content.Intent(this, DefinirRutaActivity::class.java))
+        }
+
+        findViewById<androidx.cardview.widget.CardView>(R.id.cardSolicitudesEstudiantes)?.setOnClickListener {
+            startActivity(android.content.Intent(this, SolicitudesEstudiantesActivity::class.java))
+        }
+
         val btnSwitchToPadre = findViewById<Button>(R.id.btnSwitchToPadre)
         if (sessionManager.hasRole("padre")) {
             btnSwitchToPadre?.visibility = View.VISIBLE
@@ -148,13 +177,50 @@ class ChoferHomeActivity : AppCompatActivity() {
         }
     }
     
+    override fun onResume() {
+        super.onResume()
+        // Al volver de aceptar/rechazar estudiantes la ruta pudo cambiar.
+        if (driverEmail.isNotEmpty()) {
+            viewModel.loadRuta(driverEmail)
+            actualizarContadorSolicitudes()
+        }
+    }
+
+    private fun actualizarContadorSolicitudes() {
+        val tvContador = findViewById<TextView>(R.id.tvContadorSolicitudes) ?: return
+        ChoferRepository().getSolicitudesEstudiantes(driverEmail) { pendientes ->
+            val cantidad = pendientes?.size ?: 0
+            tvContador.text = if (cantidad > 0) "Solicitudes ($cantidad)" else "Solicitudes"
+        }
+    }
+
     private fun startRouteSimulation(idViaje: Int) {
         Toast.makeText(this, "Preparando simulación GPS...", Toast.LENGTH_SHORT).show()
         tvRouteStatus.text = "En progreso"
         tvRouteStatus.setBackgroundColor(android.graphics.Color.parseColor("#F57F17"))
 
-        Thread {
-            val geocoder = android.location.Geocoder(this, java.util.Locale.getDefault())
+        lifecycleScope.launch {
+            val points = geocodificarParadas()
+
+            if (points.isNotEmpty()) {
+                // Ruta real siguiendo calles + tiempo estimado por tramo (Directions API, cacheado en Room)
+                val tramos = rutaRepository.obtenerTramos(driverEmail, points)
+
+                DriverTracker.startTracking(driverEmail, points, idViaje, tramos)
+                com.example.busetaescolarapp.utils.TextToSpeechManager.speak("Iniciando ruta escolar. Que tenga un buen viaje.")
+                Toast.makeText(this@ChoferHomeActivity, "Ruta iniciada correctamente", Toast.LENGTH_SHORT).show()
+
+                // Redirigir al mapa
+                startActivity(android.content.Intent(this@ChoferHomeActivity, MapaChoferActivity::class.java))
+            } else {
+                Toast.makeText(this@ChoferHomeActivity, "Error obteniendo coordenadas GPS", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private suspend fun geocodificarParadas(): List<com.google.android.gms.maps.model.LatLng> =
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            val geocoder = android.location.Geocoder(this@ChoferHomeActivity, java.util.Locale.getDefault())
             val points = mutableListOf<com.google.android.gms.maps.model.LatLng>()
             for (child in childrenList) {
                 if (child.lat != null && child.lng != null) {
@@ -176,81 +242,17 @@ class ChoferHomeActivity : AppCompatActivity() {
                     points.add(com.google.android.gms.maps.model.LatLng(-2.9000, -79.0000))
                 }
             }
-            runOnUiThread {
-                if (points.isNotEmpty()) {
-                    DriverTracker.onStopArrived = { index ->
-                        handleStopArrived(index, idViaje)
-                    }
-                    DriverTracker.startTracking(driverEmail, points, idViaje)
-                    com.example.busetaescolarapp.utils.TextToSpeechManager.speak("Iniciando ruta escolar. Que tenga un buen viaje.")
-                    Toast.makeText(this, "Ruta iniciada correctamente", Toast.LENGTH_SHORT).show()
-                    
-                    // Redirigir al mapa
-                    startActivity(android.content.Intent(this@ChoferHomeActivity, MapaChoferActivity::class.java))
-                } else {
-                    Toast.makeText(this, "Error obteniendo coordenadas GPS", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }.start()
-    }
-
-    private fun handleStopArrived(index: Int, idViaje: Int) {
-        val child = childrenList[index]
-        promptVoice(child, index, idViaje, "Parada de ${child.nombre_completo}. ¿Subió a la buseta?")
-    }
-
-    private fun promptVoice(child: EstudianteResponse, index: Int, idViaje: Int, message: String) {
-        Toast.makeText(this, "🗣️ Hablando: $message", Toast.LENGTH_LONG).show()
-        com.example.busetaescolarapp.utils.TextToSpeechManager.speak(message)
-        
-        // Esperamos a que termine de hablar (aprox 3 segundos) para empezar a escuchar
-        window.decorView.postDelayed({
-            Toast.makeText(this, "🎤 Escuchando...", Toast.LENGTH_SHORT).show()
-            com.example.busetaescolarapp.utils.VoiceRecognitionManager.startListening(
-                onResult = { result ->
-                    val text = result.lowercase()
-                    val isYes = text.contains("sí") || text.contains("si") || text.contains("claro")
-                    val isNo = text.contains("no") || text.contains("nunca") || text.contains("tampoco")
-                    
-                    if (!isYes && !isNo) {
-                        Toast.makeText(this, "Respuesta no reconocida: $text", Toast.LENGTH_SHORT).show()
-                        promptVoice(child, index, idViaje, "Por favor registre la asistencia de nuevo.")
-                        return@startListening
-                    }
-                    
-                    val subio = isYes
-                    Toast.makeText(this, "Entendido: $text -> Asistencia: $subio", Toast.LENGTH_SHORT).show()
-                    viewModel.marcarAsistencia(idViaje, child.id_estudiante, subio, if (subio) null else "No respondió (Voz)")
-                    
-                    if (subio) {
-                        presentKidsCount++
-                        tvKidsCount.text = "${childrenList.size} / $presentKidsCount"
-                        
-                        // Agregar niño a la lista de "Sí asistieron"
-                        presentChildrenList.add(child)
-                        presentIds.add(child.id_estudiante)
-                        rvAsistencia.adapter?.notifyItemInserted(presentChildrenList.size - 1)
-                    }
-                    
-                    com.example.busetaescolarapp.utils.TextToSpeechManager.speak(if (subio) "Asistencia guardada." else "Falta registrada.")
-                    
-                    // Continuamos a la siguiente parada
-                    window.decorView.postDelayed({
-                        DriverTracker.resumeTracking()
-                    }, 2000)
-                },
-                onError = { error ->
-                    Toast.makeText(this, "Error de voz: $error. ¿Repetir?", Toast.LENGTH_SHORT).show()
-                    promptVoice(child, index, idViaje, "Por favor registre la asistencia de nuevo.")
-                }
-            )
-        }, 3500)
-    }
+            points
+        }
 
     override fun onDestroy() {
         super.onDestroy()
-        com.example.busetaescolarapp.utils.TextToSpeechManager.shutdown()
-        com.example.busetaescolarapp.utils.VoiceRecognitionManager.shutdown()
+        DriverTracker.onAsistenciaRegistrada = null
+        // Si la ruta sigue activa, el mapa está usando voz: apagarla aquí la dejaría muda.
+        if (!DriverTracker.isTracking()) {
+            com.example.busetaescolarapp.utils.TextToSpeechManager.shutdown()
+            com.example.busetaescolarapp.utils.VoiceRecognitionManager.shutdown()
+        }
     }
 }
 

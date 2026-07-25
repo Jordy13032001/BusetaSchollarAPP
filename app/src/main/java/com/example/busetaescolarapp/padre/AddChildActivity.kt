@@ -105,16 +105,26 @@ class AddChildActivity : AppCompatActivity() {
             return
         }
 
+        val ruta = chofer.nombre_ruta?.let { "\n\nRuta: $it" } ?: ""
+        val sectores = chofer.sectores?.takeIf { it.isNotBlank() }?.let { "\nSectores: $it" } ?: ""
+
         AlertDialog.Builder(this)
-            .setTitle("Contratar Chofer")
-            .setMessage("¿Deseas contratar a ${chofer.nombre_completo} por $${chofer.tarifa_mensual} al mes para llevar a $childName?")
-            .setPositiveButton("Contratar") { _, _ ->
+            .setTitle("Solicitar cupo")
+            .setMessage(
+                "¿Enviar solicitud a ${chofer.nombre_completo} por $${chofer.tarifa_mensual} al mes " +
+                    "para llevar a $childName?$ruta$sectores\n\nEl chofer debe aceptar la solicitud."
+            )
+            .setPositiveButton("Enviar solicitud") { _, _ ->
                 val request = EstudianteRequest(childName, childAddress, selectedLat, selectedLng, parentEmail, chofer.correo)
 
                 ApiClient.apiService.addEstudiante(request).enqueue(object : Callback<ApiResponse> {
                     override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                         if (response.isSuccessful) {
-                            Toast.makeText(this@AddChildActivity, "¡Niño agregado y chofer contratado!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this@AddChildActivity,
+                                "Solicitud enviada. Espera que el chofer la acepte.",
+                                Toast.LENGTH_LONG
+                            ).show()
                             finish()
                         } else {
                             Toast.makeText(this@AddChildActivity, "Error al guardar", Toast.LENGTH_SHORT).show()
@@ -141,6 +151,9 @@ class ChoferAdapter(
         val tvEmail: TextView = view.findViewById(R.id.tvChoferEmail)
         val tvPrice: TextView = view.findViewById(R.id.tvChoferPrice)
         val tvBus: TextView = view.findViewById(R.id.tvChoferBus)
+        val tvRuta: TextView = view.findViewById(R.id.tvChoferRuta)
+        val tvSectores: TextView = view.findViewById(R.id.tvChoferSectores)
+        val tvHorario: TextView = view.findViewById(R.id.tvChoferHorario)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -154,7 +167,22 @@ class ChoferAdapter(
         holder.tvEmail.text = chofer.correo
         holder.tvPrice.text = "$${chofer.tarifa_mensual}"
         holder.tvBus.text = "Placa: ${chofer.placa ?: "N/A"} | ${chofer.modelo ?: ""}"
-        
+
+        holder.tvRuta.text = chofer.nombre_ruta ?: "Ruta sin definir"
+        holder.tvSectores.text = chofer.sectores?.takeIf { it.isNotBlank() }
+            ?: "El chofer aún no indicó los sectores que cubre"
+
+        val turno = when (chofer.turno) {
+            "MANANA" -> "Mañana"
+            "TARDE" -> "Tarde"
+            else -> null
+        }
+        holder.tvHorario.text = listOfNotNull(
+            turno,
+            chofer.hora_salida?.let { "salida $it" },
+            chofer.colegio
+        ).joinToString(" · ").ifEmpty { "Horario sin definir" }
+
         holder.itemView.setOnClickListener {
             onClick(chofer)
         }

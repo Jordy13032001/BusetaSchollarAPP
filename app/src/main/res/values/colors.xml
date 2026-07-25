@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Identidad de marca: amarillo/naranja escolar -->
+    <color name="school_yellow">#FBC02D</color>
+    <color name="school_yellow_dark">#F9A825</color>
+    <color name="school_yellow_soft">#FFFDE7</color>
+    <color name="school_orange">#F57C00</color>
+
+    <!-- Estados -->
+    <color name="alert_red">#D32F2F</color>
+    <color name="alert_red_soft">#FFEBEE</color>
+    <color name="success_green">#2E7D32</color>
+
+    <!-- Texto y superficies -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="nav_inactive">#9E9E9E</color>
+    <color name="background_app">#F5F5F5</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="divider">#EEEEEE</color>
 </resources>

@@ -4,16 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/background_app">
 
-    <!-- Header: Saludo y Foto Perfil (TAL CUAL) -->
+    <!-- Header: Saludo y Foto Perfil -->
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FBC02D"
+        android:background="@drawable/bg_header_yellow"
+        android:elevation="4dp"
         android:orientation="horizontal"
-        android:padding="20dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -29,24 +31,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="¡Hola, Laura!"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:text="Sigue la ruta de tu hijo en tiempo real"
-                android:textColor="#E0E0E0"
+                android:textColor="#F5FFFFFF"
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"
-            app:shapeAppearanceOverlay="@style/CircleImage" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            app:cardCornerRadius="23dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="@color/white">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_background" />
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
     <!-- Tarjeta Info del Niño (DINÁMICA) -->
@@ -54,7 +65,8 @@
         android:id="@+id/rvNinosPadre"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerLayout"
@@ -66,7 +78,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,23 +100,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:background="#CCFFFFFF"
+                android:background="#F2FFFFFF"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:paddingVertical="14dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Llega en:"
-                    android:textColor="#424242"
-                    android:textSize="14sp" />
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="8 minutos"
-                    android:textColor="#FBC02D"
+                    android:textColor="@color/school_yellow_dark"
                     android:textSize="26sp"
                     android:textStyle="bold" />
 
@@ -111,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="(Aprox. 7:45 AM)"
-                    android:textColor="#757575"
+                    android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
         </FrameLayout>
@@ -121,121 +134,94 @@
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:background="@android:color/white"
+        android:layout_height="68dp"
+        android:background="@drawable/bg_bottomnav"
         android:elevation="12dp"
         android:orientation="horizontal"
+        android:paddingHorizontal="4dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!-- 1. INICIO (Activo en esta pantalla) -->
         <LinearLayout
             android:id="@+id/nav_inicio"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_today"
-                app:tint="#FBC02D" />
-            <TextView
+            style="@style/BottomNavItem">
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Inicio"
-                android:textColor="#FBC02D"
-                android:textStyle="bold"
-                android:textSize="9sp" />
+                android:background="@drawable/bg_nav_active"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="6dp">
+
+                <ImageView
+                    style="@style/BottomNavIcon"
+                    android:src="@drawable/ic_nav_home"
+                    app:tint="@color/school_yellow_dark" />
+
+                <TextView
+                    style="@style/BottomNavLabel"
+                    android:text="Inicio"
+                    android:textColor="@color/school_yellow_dark"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- 2. RUTA -->
         <LinearLayout
             android:id="@+id/nav_ruta"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
+            style="@style/BottomNavItem">
             <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_directions"
-                app:tint="#757575" />
+                style="@style/BottomNavIcon"
+                android:src="@drawable/ic_nav_route"
+                app:tint="@color/nav_inactive" />
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/BottomNavLabel"
                 android:text="Ruta"
-                android:textColor="#757575"
-                android:textSize="9sp" />
+                android:textColor="@color/nav_inactive" />
         </LinearLayout>
 
         <!-- 3. NOTIFICACIONES -->
         <LinearLayout
             android:id="@+id/nav_notificaciones"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
+            style="@style/BottomNavItem">
             <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_popup_reminder"
-                app:tint="#757575" />
+                style="@style/BottomNavIcon"
+                android:src="@drawable/ic_nav_notifications"
+                app:tint="@color/nav_inactive" />
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/BottomNavLabel"
                 android:text="Notific."
-                android:textColor="#757575"
-                android:textSize="9sp" />
+                android:textColor="@color/nav_inactive" />
         </LinearLayout>
 
         <!-- 4. INCIDENTE -->
         <LinearLayout
             android:id="@+id/nav_incidente"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
+            style="@style/BottomNavItem">
             <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_dialog_alert"
-                app:tint="#D32F2F" />
+                style="@style/BottomNavIcon"
+                android:src="@drawable/ic_nav_alert"
+                app:tint="@color/alert_red" />
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/BottomNavLabel"
                 android:text="Incidente"
-                android:textColor="#D32F2F"
-                android:textSize="9sp" />
+                android:textColor="@color/alert_red" />
         </LinearLayout>
 
         <!-- 5. PERFIL -->
         <LinearLayout
             android:id="@+id/nav_perfil"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
+            style="@style/BottomNavItem">
             <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_mylocation"
-                app:tint="#757575" />
+                style="@style/BottomNavIcon"
+                android:src="@drawable/ic_nav_profile"
+                app:tint="@color/nav_inactive" />
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/BottomNavLabel"
                 android:text="Perfil"
-                android:textColor="#757575"
-                android:textSize="9sp" />
+                android:textColor="@color/nav_inactive" />
         </LinearLayout>
     </LinearLayout>
 

@@ -10,11 +10,13 @@ import com.example.busetaescolarapp.NavigationUtils
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.IncidentRequest
 import com.example.busetaescolarapp.network.IncidentResponse
+import com.example.busetaescolarapp.ui.viewmodel.PadreViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,6 +27,7 @@ class IncidenteActivity : AppCompatActivity() {
     private lateinit var rvIncidentes: RecyclerView
     private lateinit var tvNoIncidentes: TextView
     private lateinit var parentEmail: String
+    private lateinit var viewModel: PadreViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,34 +41,25 @@ class IncidenteActivity : AppCompatActivity() {
         val sessionManager = com.example.busetaescolarapp.utils.SessionManager(this)
         parentEmail = sessionManager.getUserEmail() ?: ""
 
+        viewModel = ViewModelProvider(this)[PadreViewModel::class.java]
+
         if (parentEmail.isNotEmpty()) {
-            fetchIncidents()
+            viewModel.incidentes(parentEmail).observe(this) { incidents ->
+                if (incidents.isEmpty()) {
+                    tvNoIncidentes.visibility = View.VISIBLE
+                    rvIncidentes.visibility = View.GONE
+                } else {
+                    tvNoIncidentes.visibility = View.GONE
+                    rvIncidentes.visibility = View.VISIBLE
+                    rvIncidentes.adapter = IncidentAdapter(incidents)
+                }
+            }
+            viewModel.sincronizarIncidentes(parentEmail)
         }
 
         findViewById<FloatingActionButton>(R.id.fabReportarIncidente)?.setOnClickListener {
             showReportDialog()
         }
-    }
-
-    private fun fetchIncidents() {
-        ApiClient.apiService.getIncidents(parentEmail).enqueue(object : Callback<List<IncidentResponse>> {
-            override fun onResponse(call: Call<List<IncidentResponse>>, response: Response<List<IncidentResponse>>) {
-                if (response.isSuccessful) {
-                    val incidents = response.body() ?: emptyList()
-                    if (incidents.isEmpty()) {
-                        tvNoIncidentes.visibility = View.VISIBLE
-                        rvIncidentes.visibility = View.GONE
-                    } else {
-                        tvNoIncidentes.visibility = View.GONE
-                        rvIncidentes.visibility = View.VISIBLE
-                        rvIncidentes.adapter = IncidentAdapter(incidents)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<List<IncidentResponse>>, t: Throwable) {
-                Toast.makeText(this@IncidenteActivity, "Error de red", Toast.LENGTH_SHORT).show()
-            }
-        })
     }
 
     private fun showReportDialog() {
@@ -83,7 +77,7 @@ class IncidenteActivity : AppCompatActivity() {
                         override fun onResponse(call: Call<IncidentResponse>, response: Response<IncidentResponse>) {
                             if (response.isSuccessful) {
                                 Toast.makeText(this@IncidenteActivity, "Incidente reportado", Toast.LENGTH_SHORT).show()
-                                fetchIncidents() // Recargar lista
+                                viewModel.sincronizarIncidentes(parentEmail) // Recargar lista desde el backend hacia Room
                             }
                         }
                         override fun onFailure(call: Call<IncidentResponse>, t: Throwable) {

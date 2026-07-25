@@ -112,6 +112,7 @@ class NinoPadreAdapter(
         val tvNombreNino: android.widget.TextView = view.findViewById(R.id.tvNombreNino)
         val tvChofer: android.widget.TextView = view.findViewById(R.id.tvChofer)
         val tvDireccion: android.widget.TextView = view.findViewById(R.id.tvDireccion)
+        val tvEstadoSolicitud: android.widget.TextView = view.findViewById(R.id.tvEstadoSolicitud)
     }
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): ViewHolder {
@@ -122,8 +123,15 @@ class NinoPadreAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val child = children[position]
         holder.tvNombreNino.text = child.nombre_completo
-        holder.tvChofer.text = "Chofer: ${if (child.correo_chofer.isNotEmpty()) child.correo_chofer else "No asignado"}"
+        holder.tvChofer.text = "Chofer: ${child.nombre_chofer ?: child.correo_chofer.ifEmpty { "No asignado" }}"
         holder.tvDireccion.text = "Parada: ${child.direccion}"
+
+        // El chofer debe aceptar al estudiante antes de que entre a la ruta
+        holder.tvEstadoSolicitud.text = when (child.estado) {
+            "PENDIENTE" -> "Esperando que el chofer acepte"
+            "RECHAZADO" -> "Solicitud rechazada"
+            else -> "En la ruta"
+        }
     }
 
     override fun getItemCount() = children.size

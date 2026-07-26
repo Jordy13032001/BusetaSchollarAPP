@@ -19,11 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_revert"
-                app:tint="@android:color/white" />
+
 
             <TextView
                 android:id="@+id/tvToolbarTitle"
@@ -35,12 +31,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_alignParentEnd="true"
-                android:src="@android:drawable/ic_menu_edit"
-                app:tint="@android:color/white" />
+
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
@@ -86,12 +77,21 @@
                 android:textColor="#757575"
                 android:textSize="14sp" />
 
-            <!-- Lista de Información (Ruta, Colegio, etc.) - TAL CUAL -->
+            <TextView
+                android:id="@+id/tvParentPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="#757575"
+                android:textSize="14sp" />
+
+            <!-- Tarjeta de info del padre -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                app:cardCornerRadius="20dp"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="2dp">
 
                 <LinearLayout
@@ -100,138 +100,115 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Ruta Asignada -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_directions"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_send"
                             app:tint="#FBC02D" />
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="12dp"
                             android:orientation="vertical">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Hijo Registrado"
+                                android:text="Correo electrónico"
                                 android:textColor="#757575"
-                                android:textSize="12sp" />
+                                android:textSize="11sp" />
                             <TextView
-                                android:id="@+id/tvChildName"
+                                android:id="@+id/tvParentEmailCard"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Cargando..."
+                                android:text="—"
                                 android:textColor="#000000"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" android:layout_marginStart="40dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="10dp"
+                        android:layout_marginStart="32dp"
+                        android:background="#F0F0F0" />
 
-                    <!-- Colegio -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_myplaces"
-                            app:tint="#FBC02D" />
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Colegio"
-                                android:textColor="#757575"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="San José"
-                                android:textColor="#000000"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" android:layout_marginStart="40dp"/>
-
-                    <!-- Chofer -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_my_calendar"
-                            app:tint="#FBC02D" />
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Chofer"
-                                android:textColor="#757575"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:id="@+id/tvDriverName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Cargando..."
-                                android:textColor="#000000"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" android:layout_marginStart="40dp"/>
-
-                    <!-- Teléfono -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@android:drawable/ic_menu_call"
                             app:tint="#FBC02D" />
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="12dp"
                             android:orientation="vertical">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Email del chofer"
+                                android:text="Teléfono"
                                 android:textColor="#757575"
-                                android:textSize="12sp" />
+                                android:textSize="11sp" />
                             <TextView
-                                android:id="@+id/tvDriverEmail"
+                                android:id="@+id/tvParentPhoneCard"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Cargando..."
+                                android:text="—"
                                 android:textColor="#000000"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="10dp"
+                        android:layout_marginStart="32dp"
+                        android:background="#F0F0F0" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_myplaces"
+                            app:tint="#FBC02D" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Rol"
+                                android:textColor="#757575"
+                                android:textSize="11sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Padre / Representante"
+                                android:textColor="#000000"
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -247,40 +224,6 @@
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 app:cornerRadius="12dp" />
-
-            <!-- Nota Informativa Inferior (TAL CUAL) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:background="#FFFDE7"
-                android:padding="16dp"
-                android:gravity="center">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Puedes comunicarte con el chofer\npara cualquier duda."
-                    android:textColor="#F57F17"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Botón Quitar de la Ruta -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnQuitarDeRuta"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="20dp"
-                android:text="Quitar de la ruta"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:cornerRadius="12dp"
-                app:backgroundTint="#E65100"
-                app:icon="@android:drawable/ic_menu_close_clear_cancel"
-                app:iconGravity="textStart" />
 
             <!-- Botón Cerrar Sesión -->
             <!-- Botón Unirse como Conductor -->

@@ -29,6 +29,7 @@ class RegistroActivity : AppCompatActivity() {
         val tvGoToLogin = findViewById<TextView>(R.id.tvGoToLogin)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
         val etName = findViewById<TextInputEditText>(R.id.etName)
+        val etPhone = findViewById<TextInputEditText>(R.id.etPhone)
         val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
         val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
 
@@ -55,15 +56,16 @@ class RegistroActivity : AppCompatActivity() {
 
         btnRegister.setOnClickListener {
             val name = etName.text.toString().trim()
+            val phone = etPhone.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            if (name.isEmpty() || phone.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Por favor llena todos los campos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val request = RegistroRequest(name, email, password, selectedRole)
+            val request = RegistroRequest(name, email, phone, password, selectedRole)
             ApiClient.apiService.registerUser(request).enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                     if (response.isSuccessful && response.body() != null) {

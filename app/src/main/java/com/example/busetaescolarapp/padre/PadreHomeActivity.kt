@@ -1,5 +1,6 @@
 package com.example.busetaescolarapp.padre
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -30,6 +32,15 @@ class PadreHomeActivity : AppCompatActivity() {
     private var parentName: String = ""
     private var lastNotificationId: Int = 0
     private var rvNinos: RecyclerView? = null
+
+    private val detalleHijoLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // El padre quitó al niño de la ruta → refrescar la lista
+            cargarHijos()
+        }
+    }
 
     private val handler = Handler(Looper.getMainLooper())
     private val notifRunnable = object : Runnable {
@@ -88,7 +99,17 @@ class PadreHomeActivity : AppCompatActivity() {
                 ) {
                     if (!response.isSuccessful) return
                     val children = response.body() ?: emptyList()
-                    rvNinos?.adapter = NinoPadreAdapter(children)
+                    rvNinos?.adapter = NinoPadreAdapter(children) { child ->
+                        val intent = Intent(this@PadreHomeActivity, DetalleHijoActivity::class.java).apply {
+                            putExtra(DetalleHijoActivity.EXTRA_ID, child.id_estudiante)
+                            putExtra(DetalleHijoActivity.EXTRA_NOMBRE, child.nombre_completo)
+                            putExtra(DetalleHijoActivity.EXTRA_DIRECCION, child.direccion)
+                            putExtra(DetalleHijoActivity.EXTRA_CHOFER, child.nombre_chofer ?: child.correo_chofer)
+                            putExtra(DetalleHijoActivity.EXTRA_HORA, child.hora_estimada ?: "--:--")
+                            putExtra(DetalleHijoActivity.EXTRA_ESTADO, child.estado ?: "")
+                        }
+                        detalleHijoLauncher.launch(intent)
+                    }
                 }
 
                 override fun onFailure(call: Call<List<EstudianteResponse>>, t: Throwable) {}
@@ -126,7 +147,8 @@ class PadreHomeActivity : AppCompatActivity() {
 }
 
 class NinoPadreAdapter(
-    private val children: List<EstudianteResponse>
+    private val children: List<EstudianteResponse>,
+    private val onItemClick: (EstudianteResponse) -> Unit
 ) : RecyclerView.Adapter<NinoPadreAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -153,6 +175,7 @@ class NinoPadreAdapter(
             else -> child.estado ?: "Sin estado"
         }
         holder.tvDireccion.text = "Parada: ${child.direccion}"
+        holder.itemView.setOnClickListener { onItemClick(child) }
     }
 
     override fun getItemCount() = children.size

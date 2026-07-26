@@ -106,6 +106,9 @@
             android:name=".padre.SolicitudChoferActivity"
             android:exported="false" />
         <activity
+            android:name=".padre.DetalleHijoActivity"
+            android:exported="false" />
+        <activity
             android:name=".admin.AdminDashboardActivity"
             android:exported="true" />
             

@@ -148,6 +148,22 @@
                                 android:inputType="textPersonName" />
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <!-- Teléfono -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:boxStrokeColor="#FFCA28">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etPhone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Teléfono (ej. 0991234567)"
+                                android:inputType="phone" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
                         <!-- Email -->
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

@@ -2,6 +2,7 @@ package com.example.busetaescolarapp.network
 
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.GET
@@ -11,12 +12,14 @@ import retrofit2.http.Path
 data class RegistroRequest(
     val name: String,
     val email: String,
+    val phone: String,
     val password: String,
     val role: String
 )
 
 data class DriverRequest(
     val email: String,
+    val licencia: String,
     val placa: String,
     val modelo: String,
     val capacidad: Int,

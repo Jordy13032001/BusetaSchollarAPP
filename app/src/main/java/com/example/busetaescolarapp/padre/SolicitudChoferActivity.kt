@@ -20,6 +20,7 @@ class SolicitudChoferActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_solicitud_chofer)
 
+        val etLicencia = findViewById<TextInputEditText>(R.id.etLicencia)
         val etPlaca = findViewById<TextInputEditText>(R.id.etPlaca)
         val etModelo = findViewById<TextInputEditText>(R.id.etModelo)
         val etCapacidad = findViewById<TextInputEditText>(R.id.etCapacidad)
@@ -30,18 +31,20 @@ class SolicitudChoferActivity : AppCompatActivity() {
         val email = sessionManager.getUserEmail() ?: ""
 
         btnEnviar.setOnClickListener {
+            val licencia = etLicencia.text.toString().trim()
             val placa = etPlaca.text.toString().trim()
             val modelo = etModelo.text.toString().trim()
             val capacidadStr = etCapacidad.text.toString().trim()
             val tarifaStr = etTarifa.text.toString().trim()
 
-            if (placa.isEmpty() || modelo.isEmpty() || capacidadStr.isEmpty() || tarifaStr.isEmpty()) {
+            if (licencia.isEmpty() || placa.isEmpty() || modelo.isEmpty() || capacidadStr.isEmpty() || tarifaStr.isEmpty()) {
                 Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val request = DriverRequest(
                 email = email,
+                licencia = licencia,
                 placa = placa,
                 modelo = modelo,
                 capacidad = capacidadStr.toIntOrNull() ?: 0,

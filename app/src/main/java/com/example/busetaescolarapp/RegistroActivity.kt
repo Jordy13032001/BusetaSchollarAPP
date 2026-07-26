@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.ApiResponse
 import com.example.busetaescolarapp.network.RegistroRequest
+import com.google.gson.Gson
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
@@ -65,9 +66,14 @@ class RegistroActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            btnRegister.isEnabled = false
+            btnRegister.text = "Creando cuenta..."
+
             val request = RegistroRequest(name, email, phone, password, selectedRole)
             ApiClient.apiService.registerUser(request).enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                    btnRegister.isEnabled = true
+                    btnRegister.text = "Crear mi cuenta"
                     if (response.isSuccessful && response.body() != null) {
                         Toast.makeText(
                             this@RegistroActivity,
@@ -76,12 +82,18 @@ class RegistroActivity : AppCompatActivity() {
                         ).show()
                         finish()
                     } else {
-                        Toast.makeText(this@RegistroActivity, "Error al registrar", Toast.LENGTH_SHORT).show()
+                        val errorMsg = try {
+                            val body = response.errorBody()?.string()
+                            Gson().fromJson(body, ApiResponse::class.java)?.error ?: "Error al registrar"
+                        } catch (_: Exception) { "Error al registrar" }
+                        Toast.makeText(this@RegistroActivity, errorMsg, Toast.LENGTH_LONG).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                    Toast.makeText(this@RegistroActivity, "Fallo de conexión: ${t.message}", Toast.LENGTH_SHORT).show()
+                    btnRegister.isEnabled = true
+                    btnRegister.text = "Crear mi cuenta"
+                    Toast.makeText(this@RegistroActivity, "Sin conexión: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
         }

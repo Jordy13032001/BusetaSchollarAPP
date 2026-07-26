@@ -59,10 +59,10 @@ class SolicitudChoferActivity : AppCompatActivity() {
                     btnEnviar.isEnabled = true
                     btnEnviar.text = "Enviar Solicitud"
                     if (response.isSuccessful) {
-                        Toast.makeText(this@SolicitudChoferActivity, "Solicitud enviada exitosamente", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@SolicitudChoferActivity, "¡Vehículo registrado! Ya puedes iniciar rutas.", Toast.LENGTH_LONG).show()
                         finish()
                     } else {
-                        Toast.makeText(this@SolicitudChoferActivity, "Error: Ya tienes una solicitud pendiente o ocurrió un problema.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@SolicitudChoferActivity, "Error al registrar el vehículo. Intenta de nuevo.", Toast.LENGTH_LONG).show()
                     }
                 }
 

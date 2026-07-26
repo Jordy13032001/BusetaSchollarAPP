@@ -142,7 +142,7 @@ class ChoferHomeActivity : AppCompatActivity() {
                 Toast.makeText(this, "La ruta ya está en progreso", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            viewModel.iniciarViaje(driverEmail)
+            verificarVehiculoYIniciar()
         }
 
         // btnFinalizarRuta está oculto (visibility=gone); la finalización ocurre en MapaChoferActivity
@@ -247,6 +247,37 @@ class ChoferHomeActivity : AppCompatActivity() {
             points.add(colegioLatLng)
             points
         }
+
+    private fun verificarVehiculoYIniciar() {
+        ApiClient.apiService.getEstadoVehiculo(driverEmail)
+            .enqueue(object : retrofit2.Callback<com.example.busetaescolarapp.network.EstadoVehiculoResponse> {
+                override fun onResponse(
+                    call: retrofit2.Call<com.example.busetaescolarapp.network.EstadoVehiculoResponse>,
+                    response: retrofit2.Response<com.example.busetaescolarapp.network.EstadoVehiculoResponse>
+                ) {
+                    val estado = response.body()?.estado ?: "SIN_DATOS"
+                    if (estado == "APROBADO") {
+                        viewModel.iniciarViaje(driverEmail)
+                    } else {
+                        val mensaje = "Debes registrar los datos de tu vehículo antes de iniciar una ruta."
+                        androidx.appcompat.app.AlertDialog.Builder(this@ChoferHomeActivity)
+                            .setTitle("Vehículo no configurado")
+                            .setMessage(mensaje)
+                            .setPositiveButton("Ir a mi perfil") { _, _ ->
+                                startActivity(android.content.Intent(this@ChoferHomeActivity, PerfilChoferActivity::class.java))
+                            }
+                            .setNegativeButton("Cancelar", null)
+                            .show()
+                    }
+                }
+                override fun onFailure(
+                    call: retrofit2.Call<com.example.busetaescolarapp.network.EstadoVehiculoResponse>,
+                    t: Throwable
+                ) {
+                    Toast.makeText(this@ChoferHomeActivity, "Sin conexión. Intenta de nuevo.", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
 
     override fun onDestroy() {
         super.onDestroy()

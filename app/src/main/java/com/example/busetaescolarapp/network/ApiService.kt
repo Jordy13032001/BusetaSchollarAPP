@@ -26,6 +26,13 @@ data class DriverRequest(
     val tarifa_mensual: Double
 )
 
+data class EstadoVehiculoResponse(
+    val estado: String,
+    val placa: String?,
+    val modelo: String?,
+    val capacidad: Int?
+)
+
 data class ApiResponse(
     val message: String?,
     val error: String?,
@@ -255,6 +262,9 @@ interface ApiService {
 
     @DELETE("estudiantes/{id}/ruta")
     fun quitarEstudianteDeRuta(@Path("id") idEstudiante: Int): Call<ApiResponse>
+
+    @GET("chofer/{correo}/estado-vehiculo")
+    fun getEstadoVehiculo(@Path("correo") correo: String): Call<EstadoVehiculoResponse>
 
     @POST("notificaciones/cerca")
     fun enviarNotifCerca(@Body request: CercaRequest): Call<ApiResponse>

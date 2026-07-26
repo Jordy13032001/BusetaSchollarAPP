@@ -46,6 +46,7 @@ class ChoferHomeActivity : AppCompatActivity() {
     private var presentKidsCount = 0
     private lateinit var viewModel: com.example.busetaescolarapp.ui.viewmodel.ChoferViewModel
     private lateinit var rutaRepository: RutaRepository
+    private var colegioLatLng = com.google.android.gms.maps.model.LatLng(-2.9065, -79.0040)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +97,6 @@ class ChoferHomeActivity : AppCompatActivity() {
                 val child = childrenList.getOrNull(index)
                 if (subio && child != null && !presentIds.contains(child.id_estudiante)) {
                     presentKidsCount++
-                    tvKidsCount.text = "${childrenList.size} / $presentKidsCount"
                     presentChildrenList.add(child)
                     presentIds.add(child.id_estudiante)
                     rvAsistencia.adapter?.notifyItemInserted(presentChildrenList.size - 1)
@@ -111,7 +111,7 @@ class ChoferHomeActivity : AppCompatActivity() {
             val adapter = AsistenciaAdapter(presentChildrenList, presentIds, isReadOnly = true)
             rvAsistencia.adapter = adapter
             presentKidsCount = 0
-            tvKidsCount.text = "${childrenList.size} / $presentKidsCount"
+            tvKidsCount.text = "${childrenList.size}"
             tvRouteName.text = "Ruta Asignada"
         }
 
@@ -138,19 +138,7 @@ class ChoferHomeActivity : AppCompatActivity() {
             viewModel.iniciarViaje(driverEmail)
         }
 
-        btnFinalizar?.setOnClickListener {
-            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
-            val fechaCelular = sdf.format(java.util.Date())
-            viewModel.finalizarViaje(driverEmail, fechaCelular)
-            
-            // Reiniciar la lista visual de asistencia al finalizar
-            presentKidsCount = 0
-            tvKidsCount.text = "${childrenList.size} / 0"
-            presentChildrenList.clear()
-            presentIds.clear()
-            val resetAdapter = AsistenciaAdapter(presentChildrenList, presentIds, isReadOnly = true)
-            rvAsistencia.adapter = resetAdapter
-        }
+        // btnFinalizarRuta está oculto (visibility=gone); la finalización ocurre en MapaChoferActivity
         
         findViewById<androidx.cardview.widget.CardView>(R.id.cardMiRuta)?.setOnClickListener {
             startActivity(android.content.Intent(this, DefinirRutaActivity::class.java))
@@ -174,9 +162,18 @@ class ChoferHomeActivity : AppCompatActivity() {
         
         if (driverEmail.isNotEmpty()) {
             viewModel.loadRuta(driverEmail)
+            cargarColegio()
         }
     }
-    
+
+    private fun cargarColegio() {
+        ChoferRepository().getRutaInfo(driverEmail) { info ->
+            val lat = info?.lat_colegio ?: return@getRutaInfo
+            val lng = info.lng_colegio ?: return@getRutaInfo
+            colegioLatLng = com.google.android.gms.maps.model.LatLng(lat, lng)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         // Al volver de aceptar/rechazar estudiantes la ruta pudo cambiar.
@@ -232,16 +229,15 @@ class ChoferHomeActivity : AppCompatActivity() {
                     if (!addresses.isNullOrEmpty()) {
                         points.add(com.google.android.gms.maps.model.LatLng(addresses[0].latitude, addresses[0].longitude))
                     } else {
-                        // Fallback a coordenadas genericas de Cuenca si no encuentra la direccion,
-                        // asi no nos saltamos al niño en la simulacion.
                         points.add(com.google.android.gms.maps.model.LatLng(-2.9000, -79.0000))
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    // Fallback tambien en caso de excepcion
                     points.add(com.google.android.gms.maps.model.LatLng(-2.9000, -79.0000))
                 }
             }
+            // El colegio es siempre la última parada de la ruta
+            points.add(colegioLatLng)
             points
         }
 

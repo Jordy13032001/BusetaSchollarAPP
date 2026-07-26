@@ -45,6 +45,7 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var childrenList: List<EstudianteResponse> = emptyList()
     private val paradaMarkers = mutableMapOf<Int, com.google.android.gms.maps.model.Marker>()
+    private var colegioLatLng = LatLng(-2.9065, -79.0040)
     private var confirmacionDialog: androidx.appcompat.app.AlertDialog? = null
     private var confirmacionDialogView: View? = null
 
@@ -73,6 +74,30 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (driverEmail.isNotEmpty()) {
             fetchRoute()
+            fetchColegio()
+        }
+
+        // Enviar notificación CERCA cuando el bus sale hacia la siguiente parada
+        DriverTracker.onMovingToNextStop = { nextIndex ->
+            val child = childrenList.getOrNull(nextIndex) ?: return@onMovingToNextStop
+            val idViaje = DriverTracker.currentViajeId ?: return@onMovingToNextStop
+            com.example.busetaescolarapp.network.ApiClient.apiService
+                .enviarNotifCerca(com.example.busetaescolarapp.network.CercaRequest(idViaje, child.id_estudiante))
+                .enqueue(object : retrofit2.Callback<com.example.busetaescolarapp.network.ApiResponse> {
+                    override fun onResponse(
+                        call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>,
+                        response: retrofit2.Response<com.example.busetaescolarapp.network.ApiResponse>
+                    ) {}
+                    override fun onFailure(call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>, t: Throwable) {}
+                })
+        }
+    }
+
+    private fun fetchColegio() {
+        choferRepository.getRutaInfo(driverEmail) { info ->
+            val lat = info?.lat_colegio ?: return@getRutaInfo
+            val lng = info.lng_colegio ?: return@getRutaInfo
+            colegioLatLng = LatLng(lat, lng)
         }
     }
 
@@ -231,8 +256,18 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             if (rutaCoordenadas.isNotEmpty()) {
-                // Ya no dibujamos la línea recta de conexión directa: solo se muestra
-                // la ruta real (Directions API) cacheada en Room, siguiendo las calles.
+                // Añadir el colegio como marcador y última parada de la polilínea
+                rutaCoordenadas.add(colegioLatLng)
+                runOnUiThread {
+                    mMap?.addMarker(
+                        MarkerOptions()
+                            .position(colegioLatLng)
+                            .title("Colegio")
+                            .icon(com.google.android.gms.maps.model.BitmapDescriptorFactory
+                                .defaultMarker(com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN))
+                            .anchor(0.5f, 1f)
+                    )
+                }
                 dibujarRutaRealSiExiste(rutaCoordenadas.toList())
             }
         }.start()
@@ -330,22 +365,23 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
             .setView(view)
             .setCancelable(false)
             .create()
-        view.findViewById<MaterialButton>(R.id.btnVolverInicioRuta).setOnClickListener {
-            dialog.dismiss()
-            finish()
+        view.findViewById<MaterialButton>(R.id.btnVolverInicioRuta).apply {
+            text = "Ver Resumen"
+            setOnClickListener {
+                dialog.dismiss()
+                startActivity(android.content.Intent(this@MapaChoferActivity, ResumenViajeActivity::class.java))
+                finish()
+            }
         }
         dialog.show()
-
-        // Cierra formalmente el viaje en el backend, igual que el botón "Finalizar Ruta"
-        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        choferRepository.finalizarViaje(driverEmail, sdf.format(java.util.Date())) { }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        DriverTracker.onLocationUpdate = null // Remove listener to avoid leaks
+        DriverTracker.onLocationUpdate = null
         DriverTracker.onStopArrived = null
         DriverTracker.onRutaFinalizada = null
+        DriverTracker.onMovingToNextStop = null
         confirmacionDialog?.dismiss()
         confirmacionDialog = null
         confirmacionDialogView = null

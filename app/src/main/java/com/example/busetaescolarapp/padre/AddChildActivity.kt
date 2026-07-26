@@ -1,16 +1,19 @@
 package com.example.busetaescolarapp.padre
 
-import android.content.Context
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.busetaescolarapp.R
 import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.ApiResponse
@@ -20,11 +23,6 @@ import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
-import android.app.Activity
-import android.content.Intent
-import android.widget.ImageButton
-import androidx.activity.result.contract.ActivityResultContracts
 
 class AddChildActivity : AppCompatActivity() {
 
@@ -81,9 +79,16 @@ class AddChildActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<ChoferResponse>>, response: Response<List<ChoferResponse>>) {
                 if (response.isSuccessful) {
                     val choferes = response.body() ?: emptyList()
-                    val adapter = ChoferAdapter(choferes) { chofer ->
-                        mostrarDialogoContratacion(chofer)
-                    }
+                    val adapter = ChoferAdapter(
+                        choferes,
+                        onClick = { chofer -> mostrarDialogoContratacion(chofer) },
+                        onMapClick = { chofer ->
+                            val intent = Intent(this@AddChildActivity, MapaRutaChoferActivity::class.java)
+                            intent.putExtra("CORREO_CHOFER", chofer.correo)
+                            intent.putExtra("NOMBRE_CHOFER", chofer.nombre_completo)
+                            startActivity(intent)
+                        }
+                    )
                     rvChoferes.adapter = adapter
                 } else {
                     Toast.makeText(this@AddChildActivity, "Error al cargar choferes", Toast.LENGTH_SHORT).show()
@@ -125,6 +130,7 @@ class AddChildActivity : AppCompatActivity() {
                                 "Solicitud enviada. Espera que el chofer la acepte.",
                                 Toast.LENGTH_LONG
                             ).show()
+                            setResult(Activity.RESULT_OK)
                             finish()
                         } else {
                             Toast.makeText(this@AddChildActivity, "Error al guardar", Toast.LENGTH_SHORT).show()
@@ -143,7 +149,8 @@ class AddChildActivity : AppCompatActivity() {
 
 class ChoferAdapter(
     private val choferes: List<ChoferResponse>,
-    private val onClick: (ChoferResponse) -> Unit
+    private val onClick: (ChoferResponse) -> Unit,
+    private val onMapClick: ((ChoferResponse) -> Unit)? = null
 ) : RecyclerView.Adapter<ChoferAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -154,6 +161,7 @@ class ChoferAdapter(
         val tvRuta: TextView = view.findViewById(R.id.tvChoferRuta)
         val tvSectores: TextView = view.findViewById(R.id.tvChoferSectores)
         val tvHorario: TextView = view.findViewById(R.id.tvChoferHorario)
+        val btnVerRutaMapa: ImageButton? = view.findViewById(R.id.btnVerRutaMapa)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -183,8 +191,10 @@ class ChoferAdapter(
             chofer.colegio
         ).joinToString(" · ").ifEmpty { "Horario sin definir" }
 
-        holder.itemView.setOnClickListener {
-            onClick(chofer)
+        holder.itemView.setOnClickListener { onClick(chofer) }
+
+        holder.btnVerRutaMapa?.setOnClickListener {
+            onMapClick?.invoke(chofer)
         }
     }
 

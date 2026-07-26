@@ -38,7 +38,13 @@ object NavigationUtils {
 
             navInicio.setOnClickListener { navigateTo(activity, com.example.busetaescolarapp.chofer.ChoferHomeActivity::class.java) }
             navAsistencia.setOnClickListener { navigateTo(activity, com.example.busetaescolarapp.chofer.AsistenciaActivity::class.java) }
-            navMapa.setOnClickListener { navigateTo(activity, com.example.busetaescolarapp.chofer.MapaChoferActivity::class.java) }
+            navMapa.setOnClickListener {
+                if (com.example.busetaescolarapp.chofer.DriverTracker.isTracking()) {
+                    navigateTo(activity, com.example.busetaescolarapp.chofer.MapaChoferActivity::class.java)
+                } else {
+                    android.widget.Toast.makeText(activity, "Inicia la ruta primero", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
             navIncidente.setOnClickListener { navigateTo(activity, com.example.busetaescolarapp.chofer.IncidenteChoferActivity::class.java) }
             navResumen.setOnClickListener { navigateTo(activity, com.example.busetaescolarapp.chofer.ResumenViajeActivity::class.java) }
         }

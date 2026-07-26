@@ -65,7 +65,9 @@ data class RutaInfoResponse(
     val sectores: String?,
     val hora_salida: String?,
     val colegio: String?,
-    val id_colegio: Int?
+    val id_colegio: Int?,
+    val lat_colegio: Double?,
+    val lng_colegio: Double?
 )
 
 data class RutaInfoRequest(
@@ -174,6 +176,11 @@ data class AsistenciaResponse(
     val observacion: String?
 )
 
+data class CercaRequest(
+    val id_viaje: Int,
+    val id_estudiante: Int
+)
+
 interface ApiService {
     @POST("registro")
     fun registerUser(@Body request: RegistroRequest): Call<ApiResponse>
@@ -242,6 +249,12 @@ interface ApiService {
 
     @POST("viajes/{id_viaje}/asistencia")
     fun marcarAsistencia(@Path("id_viaje") idViaje: Int, @Body request: AsistenciaRequest): Call<AsistenciaResponse>
+
+    @POST("notificaciones/cerca")
+    fun enviarNotifCerca(@Body request: CercaRequest): Call<ApiResponse>
+
+    @POST("viajes/{id_viaje}/notificar-llegada")
+    fun notificarLlegada(@Path("id_viaje") idViaje: Int): Call<ApiResponse>
 
     // ADMIN ENDPOINTS
     @GET("solicitudes")

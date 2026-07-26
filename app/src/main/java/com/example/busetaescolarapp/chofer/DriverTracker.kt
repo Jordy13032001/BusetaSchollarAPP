@@ -38,6 +38,8 @@ object DriverTracker {
     var onStopArrived: ((Int) -> Unit)? = null
     var onNextStopUpdate: ((Int) -> Unit)? = null
     var onRutaFinalizada: (() -> Unit)? = null
+    /** Fired when the bus leaves a stop and begins moving toward the next one. Index = next stop. */
+    var onMovingToNextStop: ((Int) -> Unit)? = null
 
     private val _paradasVisitadas = mutableSetOf<Int>()
     val paradasVisitadas: Set<Int> get() = _paradasVisitadas
@@ -75,6 +77,7 @@ object DriverTracker {
         _currentPositionIndex++
         if (_currentPositionIndex < routePoints.size) {
             onNextStopUpdate?.invoke(_currentPositionIndex)
+            onMovingToNextStop?.invoke(_currentPositionIndex)
 
             val puntosTramo = tramos.getOrNull(tramoIndex)?.puntosTramo?.let { PolylineUtils.deserialize(it) }
             if (!puntosTramo.isNullOrEmpty()) {
@@ -121,6 +124,7 @@ object DriverTracker {
         tramos = emptyList()
         _paradasVisitadas.clear()
         paradaEsperandoConfirmacion = null
+        onMovingToNextStop = null
         handler.removeCallbacksAndMessages(null)
     }
 

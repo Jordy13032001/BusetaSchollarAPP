@@ -205,7 +205,7 @@ class RutaCompletaActivity : AppCompatActivity(), OnMapReadyCallback {
                     override fun onFailure(call: Call<DriverLocationResponse>, t: Throwable) {}
                 })
             }
-        }, 0, 10000)
+        }, 0, 5000)
     }
 
     private fun updateDriverMarker(pos: LatLng) {

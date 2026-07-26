@@ -45,6 +45,10 @@ class ChoferViewModel : ViewModel() {
         }
     }
 
+    fun resetViajeActivo() {
+        _viajeActivo.value = null
+    }
+
     fun marcarAsistencia(idViaje: Int, idEstudiante: Int, subio: Boolean, motivo: String? = null) {
         val request = com.example.busetaescolarapp.network.AsistenciaRequest(idEstudiante, subio, motivo)
         repository.marcarAsistencia(idViaje, request) { success ->

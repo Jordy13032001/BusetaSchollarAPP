@@ -126,28 +126,7 @@
                 android:textSize="9sp" />
         </LinearLayout>
 
-        <!-- 4. INCIDENTE -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_dialog_alert"
-                app:tint="#D32F2F" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Incidente"
-                android:textColor="#D32F2F"
-                android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 5. PERFIL -->
+        <!-- 4. PERFIL -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"

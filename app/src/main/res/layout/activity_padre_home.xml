@@ -138,21 +138,7 @@
                 android:textColor="@color/nav_inactive" />
         </LinearLayout>
 
-        <!-- 4. INCIDENTE -->
-        <LinearLayout
-            android:id="@+id/nav_incidente"
-            style="@style/BottomNavItem">
-            <ImageView
-                style="@style/BottomNavIcon"
-                android:src="@drawable/ic_nav_alert"
-                app:tint="@color/alert_red" />
-            <TextView
-                style="@style/BottomNavLabel"
-                android:text="Incidente"
-                android:textColor="@color/alert_red" />
-        </LinearLayout>
-
-        <!-- 5. PERFIL -->
+        <!-- 4. PERFIL -->
         <LinearLayout
             android:id="@+id/nav_perfil"
             style="@style/BottomNavItem">

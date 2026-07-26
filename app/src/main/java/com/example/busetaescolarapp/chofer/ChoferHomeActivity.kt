@@ -121,12 +121,15 @@ class ChoferHomeActivity : AppCompatActivity() {
 
         viewModel.viajeActivo.observe(this) { viaje ->
             if (viaje != null) {
-                startRouteSimulation(viaje.id_viaje)
+                if (!DriverTracker.isTracking()) {
+                    startRouteSimulation(viaje.id_viaje)
+                } else {
+                    tvRouteStatus.text = "En progreso"
+                    tvRouteStatus.setBackgroundColor(android.graphics.Color.parseColor("#F57F17"))
+                }
             } else {
-                DriverTracker.stopTracking()
-                tvRouteStatus.text = "Finalizada"
-                tvRouteStatus.setBackgroundColor(android.graphics.Color.RED)
-                Toast.makeText(this@ChoferHomeActivity, "Ruta finalizada. ¡Buen trabajo!", Toast.LENGTH_SHORT).show()
+                tvRouteStatus.text = "Sin iniciar"
+                tvRouteStatus.setBackgroundColor(android.graphics.Color.parseColor("#757575"))
             }
         }
 
@@ -176,10 +179,14 @@ class ChoferHomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Al volver de aceptar/rechazar estudiantes la ruta pudo cambiar.
         if (driverEmail.isNotEmpty()) {
             viewModel.loadRuta(driverEmail)
             actualizarContadorSolicitudes()
+        }
+        // Si el tracker no está corriendo, el viaje terminó (o nunca inició).
+        // Resetear el ViewModel para que el observer refleje "Sin iniciar".
+        if (!DriverTracker.isTracking()) {
+            viewModel.resetViajeActivo()
         }
     }
 

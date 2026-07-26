@@ -266,6 +266,22 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- Botón Quitar de la Ruta -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnQuitarDeRuta"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:text="Quitar de la ruta"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:backgroundTint="#E65100"
+                app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                app:iconGravity="textStart" />
+
             <!-- Botón Cerrar Sesión -->
             <!-- Botón Unirse como Conductor -->
             <com.google.android.material.button.MaterialButton
@@ -372,28 +388,7 @@
                 android:textSize="9sp" />
         </LinearLayout>
 
-        <!-- 4. INCIDENTE -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_dialog_alert"
-                app:tint="#D32F2F" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Incidente"
-                android:textColor="#D32F2F"
-                android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 5. PERFIL (Seleccionado en esta pantalla) -->
+        <!-- 4. PERFIL (Seleccionado en esta pantalla) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"

@@ -250,6 +250,9 @@ interface ApiService {
     @POST("viajes/{id_viaje}/asistencia")
     fun marcarAsistencia(@Path("id_viaje") idViaje: Int, @Body request: AsistenciaRequest): Call<AsistenciaResponse>
 
+    @DELETE("estudiantes/{id}/ruta")
+    fun quitarEstudianteDeRuta(@Path("id") idEstudiante: Int): Call<ApiResponse>
+
     @POST("notificaciones/cerca")
     fun enviarNotifCerca(@Body request: CercaRequest): Call<ApiResponse>
 

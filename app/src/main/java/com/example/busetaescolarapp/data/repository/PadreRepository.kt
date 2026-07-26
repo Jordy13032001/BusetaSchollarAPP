@@ -96,13 +96,14 @@ class PadreRepository(context: Context) {
             "yyyy-MM-dd'T'HH:mm:ss'Z'",
             "yyyy-MM-dd'T'HH:mm:ssXXX",
             "yyyy-MM-dd HH:mm:ss.SSSSSS",
-            "yyyy-MM-dd HH:mm:ss"
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm"
         )
         val salidaFmt = SimpleDateFormat("HH:mm · dd/MM", Locale.getDefault())
         salidaFmt.timeZone = TimeZone.getDefault()
         for (fmt in formatos) {
             try {
-                val parser = SimpleDateFormat(fmt, Locale.getDefault())
+                val parser = SimpleDateFormat(fmt, Locale.US)
                 parser.timeZone = TimeZone.getTimeZone("UTC")
                 val date = parser.parse(raw) ?: continue
                 return salidaFmt.format(date)

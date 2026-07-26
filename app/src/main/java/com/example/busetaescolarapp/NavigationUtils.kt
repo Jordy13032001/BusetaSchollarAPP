@@ -10,18 +10,15 @@ object NavigationUtils {
     fun setupPadreBottomNavigation(activity: Activity) {
         val bottomNav = activity.findViewById<LinearLayout>(R.id.bottomNavigation) ?: return
 
-        // Aseguramos que existan 5 hijos
-        if (bottomNav.childCount == 5) {
+        if (bottomNav.childCount == 4) {
             val navInicio = bottomNav.getChildAt(0)
             val navRuta = bottomNav.getChildAt(1)
             val navNotificaciones = bottomNav.getChildAt(2)
-            val navIncidente = bottomNav.getChildAt(3)
-            val navPerfil = bottomNav.getChildAt(4)
+            val navPerfil = bottomNav.getChildAt(3)
 
             navInicio.setOnClickListener { navigateTo(activity, MainActivity::class.java) }
             navRuta.setOnClickListener { navigateTo(activity, RutaCompletaActivity::class.java) }
             navNotificaciones.setOnClickListener { navigateTo(activity, NotificacionesActivity::class.java) }
-            navIncidente.setOnClickListener { navigateTo(activity, IncidenteActivity::class.java) }
             navPerfil.setOnClickListener { navigateTo(activity, PerfilNinoActivity::class.java) }
         }
     }

@@ -218,7 +218,11 @@ class RutaCompletaActivity : AppCompatActivity(), OnMapReadyCallback {
                 MarkerOptions()
                     .position(pos)
                     .title("Buseta")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                    .icon(com.example.busetaescolarapp.utils.MapIconUtils.vectorToBitmapDescriptor(
+                        this, com.example.busetaescolarapp.R.drawable.ic_bus_marker
+                    ))
+                    .anchor(0.5f, 0.5f)
+                    .flat(true)
             )
         } else {
             driverMarker?.position = pos

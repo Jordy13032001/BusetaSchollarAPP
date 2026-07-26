@@ -12,6 +12,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 class PadreRepository(context: Context) {
 
@@ -48,7 +51,7 @@ class PadreRepository(context: Context) {
                         correoPadre = email,
                         titulo = it.title,
                         mensaje = it.message,
-                        hora = it.timestamp,
+                        hora = formatearHoraLocal(it.timestamp),
                         tipo = it.type
                     )
                 }
@@ -84,5 +87,27 @@ class PadreRepository(context: Context) {
         } catch (_: Exception) {
             // Sin conexión: se sigue mostrando la última copia guardada en Room
         }
+    }
+
+    // Convierte el timestamp UTC del backend (PostgreSQL NOW()) a la hora local del teléfono
+    private fun formatearHoraLocal(raw: String): String {
+        val formatos = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd'T'HH:mm:ssXXX",
+            "yyyy-MM-dd HH:mm:ss.SSSSSS",
+            "yyyy-MM-dd HH:mm:ss"
+        )
+        val salidaFmt = SimpleDateFormat("HH:mm · dd/MM", Locale.getDefault())
+        salidaFmt.timeZone = TimeZone.getDefault()
+        for (fmt in formatos) {
+            try {
+                val parser = SimpleDateFormat(fmt, Locale.getDefault())
+                parser.timeZone = TimeZone.getTimeZone("UTC")
+                val date = parser.parse(raw) ?: continue
+                return salidaFmt.format(date)
+            } catch (_: Exception) {}
+        }
+        return raw
     }
 }

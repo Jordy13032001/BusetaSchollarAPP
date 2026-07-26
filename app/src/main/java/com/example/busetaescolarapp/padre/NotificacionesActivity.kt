@@ -49,6 +49,13 @@ class NotificacionesActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (parentEmail.isNotEmpty()) {
+            viewModel.sincronizarNotificaciones(parentEmail)
+        }
+    }
+
     private fun NotificacionEntity.toDomain(): Notificacion {
         val typeEnum = try {
             TipoNotificacion.valueOf(tipo)

@@ -79,17 +79,19 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Enviar notificación CERCA cuando el bus sale hacia la siguiente parada
         DriverTracker.onMovingToNextStop = { nextIndex ->
-            val child = childrenList.getOrNull(nextIndex) ?: return@onMovingToNextStop
-            val idViaje = DriverTracker.currentViajeId ?: return@onMovingToNextStop
-            com.example.busetaescolarapp.network.ApiClient.apiService
-                .enviarNotifCerca(com.example.busetaescolarapp.network.CercaRequest(idViaje, child.id_estudiante))
-                .enqueue(object : retrofit2.Callback<com.example.busetaescolarapp.network.ApiResponse> {
-                    override fun onResponse(
-                        call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>,
-                        response: retrofit2.Response<com.example.busetaescolarapp.network.ApiResponse>
-                    ) {}
-                    override fun onFailure(call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>, t: Throwable) {}
-                })
+            val child = childrenList.getOrNull(nextIndex)
+            val idViaje = DriverTracker.currentViajeId
+            if (child != null && idViaje != null) {
+                com.example.busetaescolarapp.network.ApiClient.apiService
+                    .enviarNotifCerca(com.example.busetaescolarapp.network.CercaRequest(idViaje, child.id_estudiante))
+                    .enqueue(object : retrofit2.Callback<com.example.busetaescolarapp.network.ApiResponse> {
+                        override fun onResponse(
+                            call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>,
+                            response: retrofit2.Response<com.example.busetaescolarapp.network.ApiResponse>
+                        ) {}
+                        override fun onFailure(call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>, t: Throwable) {}
+                    })
+            }
         }
     }
 

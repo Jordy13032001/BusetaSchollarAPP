@@ -17,7 +17,7 @@
             android:orientation="vertical"
             android:padding="32dp">
 
-            <!-- Logo -->
+            <!-- Logo Contenedor Circular Blanco -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="120dp"
                 android:layout_height="120dp"
@@ -65,154 +65,78 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="24dp"
                         android:gravity="center"
-                        android:text="¿Cómo deseas ingresar?"
+                        android:text="Bienvenido"
                         android:textColor="#FBC02D"
-                        android:textSize="22sp"
+                        android:textSize="26sp"
                         android:textStyle="bold" />
 
-                    <!-- Paso 1: Selección de rol -->
-                    <LinearLayout
-                        android:id="@+id/layoutRoleSelection"
+                    <!-- Usuario -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="8dp">
+                        android:layout_marginBottom="16dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxStrokeColor="#FFCA28">
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnRolPadre"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:text="Soy Padre/Madre"
-                            android:textAllCaps="false"
-                            android:textSize="15sp"
-                            android:textColor="@android:color/white"
-                            android:textStyle="bold"
-                            app:backgroundTint="#F57C00"
-                            app:cornerRadius="16dp"
-                            app:icon="@android:drawable/ic_menu_my_calendar"
-                            app:iconGravity="top"
-                            app:iconTint="@android:color/white" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etUsuario"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Correo electrónico"
+                            android:inputType="textEmailAddress" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnRolChofer"
-                            android:layout_width="0dp"
-                            android:layout_height="72dp"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:text="Soy Chofer"
-                            android:textAllCaps="false"
-                            android:textSize="15sp"
-                            android:textColor="@android:color/white"
-                            android:textStyle="bold"
-                            app:backgroundTint="#1976D2"
-                            app:cornerRadius="16dp"
-                            app:icon="@android:drawable/ic_menu_directions"
-                            app:iconGravity="top"
-                            app:iconTint="@android:color/white" />
-                    </LinearLayout>
-
-                    <!-- Paso 2: Formulario (inicialmente oculto) -->
-                    <LinearLayout
-                        android:id="@+id/layoutForm"
+                    <!-- Contraseña -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="gone">
+                        android:layout_marginBottom="32dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxStrokeColor="#FFCA28"
+                        app:passwordToggleEnabled="true">
 
-                        <!-- Indicador de rol seleccionado -->
-                        <TextView
-                            android:id="@+id/tvRolSeleccionado"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPassword"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="20dp"
-                            android:gravity="center"
-                            android:text="Ingresando como Padre/Madre"
-                            android:textColor="#757575"
-                            android:textSize="14sp" />
+                            android:hint="Contraseña"
+                            android:inputType="textPassword" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Usuario -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
-                            app:boxStrokeColor="#FFCA28">
+                    <!-- Botón Ingresar -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnIngresar"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:text="Ingresar a mi cuenta"
+                        android:textAllCaps="false"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="#F57C00"
+                        app:cornerRadius="16dp"
+                        app:elevation="4dp" />
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etUsuario"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Correo electrónico"
-                                android:inputType="textEmailAddress" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Contraseña -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="32dp"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
-                            app:boxStrokeColor="#FFCA28"
-                            app:passwordToggleEnabled="true">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etPassword"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Contraseña"
-                                android:inputType="textPassword" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Botón Ingresar -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnIngresar"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:text="Ingresar a mi cuenta"
-                            android:textAllCaps="false"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/white"
-                            app:backgroundTint="#F57C00"
-                            app:cornerRadius="16dp"
-                            app:elevation="4dp" />
-
-                        <!-- Cambiar rol -->
-                        <TextView
-                            android:id="@+id/tvCambiarRol"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:gravity="center"
-                            android:text="← Cambiar tipo de usuario"
-                            android:textColor="#FBC02D"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:id="@+id/tvRegistro"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:gravity="center"
-                            android:text="¿No tienes cuenta? Regístrate aquí"
-                            android:textColor="#FBC02D"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvRegistro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:gravity="center"
+                        android:text="¿No tienes cuenta? Regístrate aquí"
+                        android:textColor="#FBC02D"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

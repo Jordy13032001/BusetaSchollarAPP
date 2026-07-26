@@ -1,9 +1,7 @@
 package com.example.busetaescolarapp
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,44 +16,62 @@ import retrofit2.Response
 
 class RegistroActivity : AppCompatActivity() {
 
+    private var selectedRole: String = "padre"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registro)
 
+        val layoutRol = findViewById<View>(R.id.layoutRolRegistro)
+        val layoutForm = findViewById<View>(R.id.layoutFormRegistro)
+        val tvRolSeleccionado = findViewById<TextView>(R.id.tvRolSeleccionadoRegistro)
+        val tvCambiarTipo = findViewById<TextView>(R.id.tvCambiarTipo)
         val tvGoToLogin = findViewById<TextView>(R.id.tvGoToLogin)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
         val etName = findViewById<TextInputEditText>(R.id.etName)
         val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
         val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
-        val rgRole = findViewById<RadioGroup>(R.id.rgRole)
 
-        tvGoToLogin.setOnClickListener {
-            finish() // Volver al login
+        tvGoToLogin.setOnClickListener { finish() }
+
+        findViewById<MaterialButton>(R.id.btnRolPadreRegistro).setOnClickListener {
+            selectedRole = "padre"
+            tvRolSeleccionado.text = "Registrándome como Padre/Madre"
+            layoutRol.visibility = View.GONE
+            layoutForm.visibility = View.VISIBLE
+        }
+
+        findViewById<MaterialButton>(R.id.btnRolChoferRegistro).setOnClickListener {
+            selectedRole = "chofer"
+            tvRolSeleccionado.text = "Registrándome como Chofer"
+            layoutRol.visibility = View.GONE
+            layoutForm.visibility = View.VISIBLE
+        }
+
+        tvCambiarTipo.setOnClickListener {
+            layoutForm.visibility = View.GONE
+            layoutRol.visibility = View.VISIBLE
         }
 
         btnRegister.setOnClickListener {
             val name = etName.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
-            
-            val checkedRadioButtonId = rgRole.checkedRadioButtonId
-            val role = if (checkedRadioButtonId != -1) {
-                findViewById<RadioButton>(checkedRadioButtonId).text.toString().lowercase()
-            } else {
-                "padre"
-            }
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Por favor llena todos los campos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Llamada al backend
-            val request = RegistroRequest(name, email, password, role)
+            val request = RegistroRequest(name, email, password, selectedRole)
             ApiClient.apiService.registerUser(request).enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                     if (response.isSuccessful && response.body() != null) {
-                        Toast.makeText(this@RegistroActivity, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@RegistroActivity,
+                            "¡Cuenta creada! Ya puedes iniciar sesión.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         finish()
                     } else {
                         Toast.makeText(this@RegistroActivity, "Error al registrar", Toast.LENGTH_SHORT).show()

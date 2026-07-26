@@ -3,7 +3,6 @@ package com.example.busetaescolarapp.chofer
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.busetaescolarapp.NavigationUtils
 import com.example.busetaescolarapp.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -57,7 +56,7 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.mapChofer) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        NavigationUtils.setupChoferBottomNavigation(this)
+        // Pantalla secuencial: sin barra de navegación inferior
 
         rutaRepository = RutaRepository(applicationContext)
 
@@ -76,6 +75,13 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
             fetchRoute()
             fetchColegio()
         }
+
+        // Botón que aparece al completar la ruta → abre AsistenciaActivity
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFinalizarRutaSecuencia)
+            ?.setOnClickListener {
+                startActivity(android.content.Intent(this, AsistenciaActivity::class.java))
+                finish()
+            }
 
         // Enviar notificación CERCA cuando el bus sale hacia la siguiente parada
         DriverTracker.onMovingToNextStop = { nextIndex ->
@@ -200,12 +206,14 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
                     val child = children[index]
                     tvProximaParada.text = child.direccion
 
-                    // Tiempo estimado real (Directions API, cacheado en Room) sumando los tramos que faltan
+                    // Hora de llegada estimada en el reloj del teléfono
                     val etaSegundos = DriverTracker.tiempoEstimadoRestanteSegundos()
                     tvLlegadaEstimada.text = if (etaSegundos > 0) {
-                        "${(etaSegundos / 60).coerceAtLeast(1)} min"
+                        val etaMs = System.currentTimeMillis() + etaSegundos * 1000L
+                        java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+                            .format(java.util.Date(etaMs))
                     } else {
-                        child.hora_estimada ?: "--:--"
+                        "Calculando..."
                     }
                 } else {
                     tvProximaParada.text = "Ruta finalizada"
@@ -359,23 +367,18 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
         confirmacionDialogView = null
     }
 
-    // --- Pantalla de ruta completada ---
+    // --- Botón Finalizar Ruta visible al completar la ruta ---
 
     private fun mostrarPantallaRutaCompletada() {
-        val view = layoutInflater.inflate(R.layout.dialog_ruta_completada, null)
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
-            .setView(view)
-            .setCancelable(false)
-            .create()
-        view.findViewById<MaterialButton>(R.id.btnVolverInicioRuta).apply {
-            text = "Ver Resumen"
-            setOnClickListener {
-                dialog.dismiss()
-                startActivity(android.content.Intent(this@MapaChoferActivity, ResumenViajeActivity::class.java))
-                finish()
-            }
-        }
-        dialog.show()
+        val btnFinalizar = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFinalizarRutaSecuencia)
+        btnFinalizar?.visibility = View.VISIBLE
+
+        val tvProxima = findViewById<TextView>(R.id.tvProximaParada)
+        tvProxima?.text = "¡Llegaste al colegio!"
+        val tvLlegada = findViewById<TextView>(R.id.tvLlegadaEstimada)
+        tvLlegada?.text = "Ruta completada"
+
+        TextToSpeechManager.speak("Has llegado al colegio. Presiona Finalizar Ruta para continuar.")
     }
 
     override fun onDestroy() {

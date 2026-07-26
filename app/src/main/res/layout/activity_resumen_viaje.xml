@@ -133,21 +133,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Botón Cerrar Sesión (Chofer) -->
-            <Button
-                android:id="@+id/btnCerrarSesionChofer"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="10dp"
-                android:backgroundTint="#D32F2F"
-                android:text="Cerrar Sesión"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                app:cornerRadius="12dp"
-                app:icon="@android:drawable/ic_menu_revert"
-                app:iconGravity="textStart" />
 
         </LinearLayout>
     </ScrollView>
@@ -187,7 +172,7 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- BOTÓN GUARDAR RUTA (Sobre el menú inferior) -->
+    <!-- BOTÓN CERRAR: finaliza el flujo y vuelve al inicio del chofer -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btnFinalizarTotal"
         android:layout_width="0dp"
@@ -195,8 +180,8 @@
         android:layout_margin="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
-        app:cardBackgroundColor="#F57F17"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:cardBackgroundColor="#455A64"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -208,20 +193,20 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/checkbox_on_background"
+                android:src="@android:drawable/ic_menu_revert"
                 app:tint="@android:color/white"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Guardar Ruta"
+                android:text="Cerrar"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR (5 OPCIONES) -->
+    <!-- Navegación oculta: esta pantalla es parte del flujo secuencial de ruta -->
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -229,6 +214,7 @@
         android:background="@android:color/white"
         android:elevation="12dp"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!-- 1. INICIO -->

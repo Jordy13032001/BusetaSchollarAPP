@@ -107,6 +107,10 @@ object DriverTracker {
             }
             currentLatLng = puntos[i]
             onLocationUpdate?.invoke(puntos[i])
+            // Sincronizar con el backend cada 5 pasos para que el mapa del padre se actualice en tiempo real
+            if (i % 5 == 0) {
+                sendLocationToBackend(puntos[i])
+            }
             i++
             handler.postDelayed(::step, stepMs)
         }

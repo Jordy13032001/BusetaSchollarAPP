@@ -153,22 +153,11 @@
                 android:textStyle="bold"
                 app:cornerRadius="12dp" />
 
-            <Button
-                android:id="@+id/btnReiniciar"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="#D32F2F"
-                android:text="Reiniciar Asistencia"
-                android:textAllCaps="false"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:cornerRadius="12dp" />
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR (5 OPCIONES) -->
+    <!-- Navegación oculta: esta pantalla es parte del flujo secuencial de ruta -->
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -176,6 +165,7 @@
         android:background="@android:color/white"
         android:elevation="12dp"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!-- 1. INICIO -->

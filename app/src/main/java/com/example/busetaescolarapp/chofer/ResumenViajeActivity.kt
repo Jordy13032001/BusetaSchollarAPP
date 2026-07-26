@@ -2,13 +2,10 @@ package com.example.busetaescolarapp.chofer
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import com.example.busetaescolarapp.LoginActivity
-import com.example.busetaescolarapp.NavigationUtils
 import com.example.busetaescolarapp.NotificationHelper
 import com.example.busetaescolarapp.R
 import com.example.busetaescolarapp.network.ApiClient
@@ -26,37 +23,17 @@ class ResumenViajeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_resumen_viaje)
-        NavigationUtils.setupChoferBottomNavigation(this)
 
         val sessionManager = com.example.busetaescolarapp.utils.SessionManager(this)
         driverEmail = sessionManager.getUserEmail() ?: ""
 
         NotificationHelper.createNotificationChannel(this)
 
-        // Usar el id de viaje del tracker si la ruta acaba de terminar
         currentViajeId = DriverTracker.currentViajeId
 
-        findViewById<Button>(R.id.btnCerrarSesionChofer)?.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-        }
-
+        // "Cerrar": guarda la ruta y vuelve a la pantalla de inicio del chofer
         findViewById<CardView>(R.id.btnFinalizarTotal)?.setOnClickListener {
-            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
-            val fechaCelular = sdf.format(java.util.Date())
-            val request = com.example.busetaescolarapp.network.FinalizarRequest(fechaCelular)
-            ApiClient.apiService.finalizarViaje(driverEmail, request).enqueue(object : Callback<ViajeResponse> {
-                override fun onResponse(call: Call<ViajeResponse>, response: Response<ViajeResponse>) {
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@ResumenViajeActivity, "Ruta guardada", Toast.LENGTH_LONG).show()
-                    }
-                }
-                override fun onFailure(call: Call<ViajeResponse>, t: Throwable) {
-                    Toast.makeText(this@ResumenViajeActivity, "Error al guardar", Toast.LENGTH_SHORT).show()
-                }
-            })
+            guardarYCerrar()
         }
 
         findViewById<CardView>(R.id.btnEnviarAPadres)?.setOnClickListener {
@@ -66,9 +43,29 @@ class ResumenViajeActivity : AppCompatActivity() {
         loadRutaStats()
     }
 
+    private fun guardarYCerrar() {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+        val fechaCelular = sdf.format(java.util.Date())
+        val request = com.example.busetaescolarapp.network.FinalizarRequest(fechaCelular)
+        ApiClient.apiService.finalizarViaje(driverEmail, request).enqueue(object : Callback<ViajeResponse> {
+            override fun onResponse(call: Call<ViajeResponse>, response: Response<ViajeResponse>) {
+                runOnUiThread { volverAlInicio() }
+            }
+            override fun onFailure(call: Call<ViajeResponse>, t: Throwable) {
+                runOnUiThread { volverAlInicio() }
+            }
+        })
+    }
+
+    private fun volverAlInicio() {
+        val intent = Intent(this, ChoferHomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(intent)
+        finish()
+    }
+
     private fun enviarNotificacionesAPadres() {
         val idViaje = currentViajeId ?: run {
-            // Intentar obtener el viaje actual del backend si no lo tenemos
             loadRutaStatsYNotificar()
             return
         }

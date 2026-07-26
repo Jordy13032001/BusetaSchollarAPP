@@ -55,7 +55,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Barra de Navegación Inferior - 5 ítems (igual que el resto de pantallas del chofer) -->
+    <!-- Barra de Navegación Inferior - 2 ítems -->
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -86,7 +86,7 @@
                 android:textSize="9sp" />
         </LinearLayout>
 
-        <!-- 2. ASISTENCIA -->
+        <!-- 2. PERFIL -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -97,76 +97,12 @@
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_agenda"
+                android:src="@android:drawable/ic_menu_my_calendar"
                 app:tint="#757575" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Asistencia"
-                android:textColor="#757575"
-                android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 3. MAPA -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_dialog_map"
-                app:tint="#757575" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mapa"
-                android:textColor="#757575"
-                android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 4. ALERTA (seleccionada) -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_dialog_alert"
-                app:tint="#D32F2F" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Alerta"
-                android:textColor="#D32F2F"
-                android:textStyle="bold"
-                android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 5. RESUMEN -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground">
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_info_details"
-                app:tint="#757575" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Resumen"
+                android:text="Perfil"
                 android:textColor="#757575"
                 android:textSize="9sp" />
         </LinearLayout>

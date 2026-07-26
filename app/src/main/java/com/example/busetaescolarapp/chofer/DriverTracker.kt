@@ -79,21 +79,33 @@ object DriverTracker {
             onNextStopUpdate?.invoke(_currentPositionIndex)
             onMovingToNextStop?.invoke(_currentPositionIndex)
 
+            // El último punto de routePoints es siempre el colegio (sin parada de estudiante).
+            // Al llegar ahí, disparamos onRutaFinalizada en vez de mostrar el diálogo de asistencia.
+            val esUltimoPunto = (_currentPositionIndex == routePoints.size - 1)
+
             val puntosTramo = tramos.getOrNull(tramoIndex)?.puntosTramo?.let { PolylineUtils.deserialize(it) }
             if (!puntosTramo.isNullOrEmpty()) {
-                // Ruta real obtenida de la Directions API: simulamos el recorrido siguiendo las calles
-                animarTramo(puntosTramo) { arriveAtStop(_currentPositionIndex) }
+                animarTramo(puntosTramo) {
+                    if (esUltimoPunto) llegarAlColegio() else arriveAtStop(_currentPositionIndex)
+                }
             } else {
-                // Sin datos de ruta real (sin conexión, etc.): salto directo a la siguiente parada
                 handler.postDelayed({
-                    arriveAtStop(_currentPositionIndex)
+                    if (esUltimoPunto) llegarAlColegio() else arriveAtStop(_currentPositionIndex)
                 }, updateInterval)
             }
         } else {
-            // Se recorrieron todas las paradas: ruta completada de forma natural
             onRutaFinalizada?.invoke()
             stopTracking()
         }
+    }
+
+    private fun llegarAlColegio() {
+        val point = routePoints.lastOrNull() ?: return
+        currentLatLng = point
+        sendLocationToBackend(point)
+        onLocationUpdate?.invoke(point)
+        onRutaFinalizada?.invoke()
+        stopTracking()
     }
 
     private fun animarTramo(puntos: List<LatLng>, alTerminar: () -> Unit) {

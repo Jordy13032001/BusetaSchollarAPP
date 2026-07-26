@@ -25,16 +25,22 @@
                 android:id="@+id/tvDriverName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:text="Bienvenido"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <!-- Botón de incidentes en el toolbar -->
             <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:id="@+id/btnToolbarIncidente"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
                 android:layout_alignParentEnd="true"
-                android:src="@android:drawable/ic_menu_sort_by_size"
+                android:layout_centerVertical="true"
+                android:padding="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_dialog_alert"
                 app:tint="@android:color/white" />
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
@@ -151,7 +157,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- 3b. GESTIÓN DE LA RUTA Y SUS ESTUDIANTES -->
+            <!-- 3b. GESTIÓN DE SOLICITUDES DE ESTUDIANTES -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -160,53 +166,9 @@
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardMiRuta"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardBackgroundColor="@color/surface_card"
-                    app:cardCornerRadius="15dp"
-                    app:cardElevation="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="18dp">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:src="@drawable/ic_nav_route"
-                            app:tint="@color/school_yellow_dark" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Mi ruta"
-                            android:textColor="@color/text_primary"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="Sectores y horario"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
                     android:id="@+id/cardSolicitudesEstudiantes"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
                     android:foreground="?attr/selectableItemBackground"
                     app:cardBackgroundColor="@color/surface_card"
                     app:cardCornerRadius="15dp"
@@ -303,7 +265,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR (5 OPCIONES) -->
+    <!-- BARRA DE NAVEGACIÓN INFERIOR (2 OPCIONES) -->
     <LinearLayout
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -319,28 +281,10 @@
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Inicio" android:textColor="#F57F17" android:textSize="9sp" android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- 2. ASISTENCIA -->
+        <!-- 2. PERFIL -->
         <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#757575" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asistencia" android:textColor="#757575" android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 3. MAPA -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_directions" app:tint="#757575" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mapa" android:textColor="#757575" android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 4. INCIDENTE -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_dialog_alert" app:tint="#D32F2F" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Incidente" android:textColor="#D32F2F" android:textSize="9sp" />
-        </LinearLayout>
-
-        <!-- 5. RESUMEN -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_sort_by_size" app:tint="#757575" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Resumen" android:textColor="#757575" android:textSize="9sp" />
+            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_my_calendar" app:tint="#757575" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Perfil" android:textColor="#757575" android:textSize="9sp" />
         </LinearLayout>
 
     </LinearLayout>

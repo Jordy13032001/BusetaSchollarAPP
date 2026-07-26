@@ -90,6 +90,10 @@ class ChoferHomeActivity : AppCompatActivity() {
 
         NavigationUtils.setupChoferBottomNavigation(this)
 
+        findViewById<android.widget.ImageView>(R.id.btnToolbarIncidente)?.setOnClickListener {
+            startActivity(android.content.Intent(this, IncidenteChoferActivity::class.java))
+        }
+
         // La confirmación de voz ocurre en MapaChoferActivity (pantalla visible durante el viaje);
         // aquí solo escuchamos el resultado para mantener esta lista de asistencia sincronizada.
         DriverTracker.onAsistenciaRegistrada = { index, subio ->
@@ -140,10 +144,6 @@ class ChoferHomeActivity : AppCompatActivity() {
 
         // btnFinalizarRuta está oculto (visibility=gone); la finalización ocurre en MapaChoferActivity
         
-        findViewById<androidx.cardview.widget.CardView>(R.id.cardMiRuta)?.setOnClickListener {
-            startActivity(android.content.Intent(this, DefinirRutaActivity::class.java))
-        }
-
         findViewById<androidx.cardview.widget.CardView>(R.id.cardSolicitudesEstudiantes)?.setOnClickListener {
             startActivity(android.content.Intent(this, SolicitudesEstudiantesActivity::class.java))
         }

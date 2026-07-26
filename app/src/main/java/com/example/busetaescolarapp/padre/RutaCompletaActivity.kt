@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.busetaescolarapp.NavigationUtils
@@ -24,6 +25,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
 import java.util.Locale
@@ -220,6 +223,30 @@ class RutaCompletaActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             driverMarker?.position = pos
         }
+        calcularETA(pos)
+    }
+
+    private fun calcularETA(busPos: LatLng) {
+        val tvETA = findViewById<TextView>(R.id.tvHoraLlegada) ?: return
+
+        val misParadas = allChildrenList.filter {
+            it.correo_padre == parentEmail && it.correo_chofer == currentDriverEmail
+        }
+
+        if (misParadas.isEmpty()) return
+
+        val distanciaMin = misParadas.mapNotNull { child ->
+            val lat = child.lat ?: return@mapNotNull null
+            val lng = child.lng ?: return@mapNotNull null
+            val result = FloatArray(1)
+            android.location.Location.distanceBetween(busPos.latitude, busPos.longitude, lat, lng, result)
+            result[0].toDouble()
+        }.minOrNull() ?: return
+
+        // Bus escolar ~20 km/h = 5.56 m/s
+        val etaSegundos = (distanciaMin / 5.56).toLong()
+        val etaMs = System.currentTimeMillis() + etaSegundos * 1000L
+        tvETA.text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(etaMs))
     }
 
     override fun onDestroy() {

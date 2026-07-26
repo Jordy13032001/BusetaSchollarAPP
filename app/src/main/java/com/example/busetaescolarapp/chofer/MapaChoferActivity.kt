@@ -185,6 +185,23 @@ class MapaChoferActivity : AppCompatActivity(), OnMapReadyCallback {
                     childrenList = children
                     setupNextStopListener(children)
                     drawRealRoute(children)
+
+                    // El primer estudiante nunca recibe onMovingToNextStop porque ese callback
+                    // solo se dispara al salir de una parada (no existe parada previa al índice 0).
+                    // Lo enviamos aquí al cargar la ruta, si la ruta acaba de iniciar (índice 0).
+                    if (DriverTracker.currentPositionIndex == 0 && children.isNotEmpty()) {
+                        val firstChild = children[0]
+                        val idViaje = DriverTracker.currentViajeId
+                        if (idViaje != null) {
+                            com.example.busetaescolarapp.network.ApiClient.apiService
+                                .enviarNotifCerca(com.example.busetaescolarapp.network.CercaRequest(idViaje, firstChild.id_estudiante))
+                                .enqueue(object : retrofit2.Callback<com.example.busetaescolarapp.network.ApiResponse> {
+                                    override fun onResponse(call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>, response: retrofit2.Response<com.example.busetaescolarapp.network.ApiResponse>) {}
+                                    override fun onFailure(call: retrofit2.Call<com.example.busetaescolarapp.network.ApiResponse>, t: Throwable) {}
+                                })
+                        }
+                    }
+
                     // Si la pantalla se recreó (p. ej. al rotar) con una parada sin confirmar,
                     // volvemos a mostrar el recuadro en lugar de dejar la ruta trabada.
                     DriverTracker.paradaEsperandoConfirmacion?.let { pendiente ->

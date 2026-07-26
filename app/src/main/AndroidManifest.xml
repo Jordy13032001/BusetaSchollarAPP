@@ -61,6 +61,9 @@
             android:name=".chofer.SolicitudesEstudiantesActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".chofer.PerfilChoferActivity"
+            android:exported="false" />
         <!-- Login Activity (Launcher) -->
         <activity
             android:name=".LoginActivity"

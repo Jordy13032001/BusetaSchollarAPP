@@ -21,7 +21,10 @@ import retrofit2.Response
 class NotificacionPoller(
     private val context: Context,
     private val parentEmail: String,
-    private val intervaloMs: Long = 15_000L
+    private val intervaloMs: Long = 15_000L,
+    // Avisa que llegó algo nuevo, para que la pantalla que esté abierta se refresque
+    // sin que el usuario tenga que salir y volver a entrar.
+    private val onNuevas: (() -> Unit)? = null
 ) {
 
     private val handler = Handler(Looper.getMainLooper())
@@ -63,6 +66,7 @@ class NotificacionPoller(
                     // partida. Sin esto sonarían de golpe todas las notificaciones viejas.
                     if (ultimoId == 0) {
                         guardarUltimoId(notifs.maxOf { it.id })
+                        onNuevas?.invoke()
                         return
                     }
 
@@ -75,6 +79,7 @@ class NotificacionPoller(
                     }
 
                     guardarUltimoId(nuevas.maxOf { it.id })
+                    onNuevas?.invoke()
                 }
 
                 override fun onFailure(call: Call<List<NotificationResponse>>, t: Throwable) {

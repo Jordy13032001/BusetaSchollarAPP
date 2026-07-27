@@ -12,6 +12,15 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // La sesión ya se guardaba en SharedPreferences cifradas, pero nunca se leía
+        // al abrir la app: por eso pedía login otra vez cada vez que se cerraba.
+        val sessionManager = com.example.busetaescolarapp.utils.SessionManager(this)
+        if (sessionManager.isLoggedIn()) {
+            irAPantallaPrincipal(sessionManager.getUserRole())
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
         val etUsuario = findViewById<TextInputEditText>(R.id.etUsuario)
@@ -44,13 +53,7 @@ class LoginActivity : AppCompatActivity() {
                             if (user != null) {
                                 val sessionManager = com.example.busetaescolarapp.utils.SessionManager(this@LoginActivity)
                                 sessionManager.saveUserSession(user.email, user.role, user.name, user.phone, user.roles)
-
-                                when (user.role) {
-                                    "admin" -> startActivity(Intent(this@LoginActivity, com.example.busetaescolarapp.admin.AdminDashboardActivity::class.java))
-                                    "chofer" -> startActivity(Intent(this@LoginActivity, ChoferHomeActivity::class.java))
-                                    else -> startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                                }
-                                finish()
+                                irAPantallaPrincipal(user.role)
                             }
                         } else {
                             Toast.makeText(this@LoginActivity, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
@@ -65,5 +68,16 @@ class LoginActivity : AppCompatActivity() {
                     }
                 })
         }
+    }
+
+    /** Manda al usuario a su pantalla según el rol y cierra el login. */
+    private fun irAPantallaPrincipal(rol: String?) {
+        val destino = when (rol) {
+            "admin" -> com.example.busetaescolarapp.admin.AdminDashboardActivity::class.java
+            "chofer" -> ChoferHomeActivity::class.java
+            else -> MainActivity::class.java
+        }
+        startActivity(Intent(this, destino))
+        finish()
     }
 }

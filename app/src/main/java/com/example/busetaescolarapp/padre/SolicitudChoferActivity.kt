@@ -59,7 +59,13 @@ class SolicitudChoferActivity : AppCompatActivity() {
                     btnEnviar.isEnabled = true
                     btnEnviar.text = "Enviar Solicitud"
                     if (response.isSuccessful) {
-                        Toast.makeText(this@SolicitudChoferActivity, "¡Vehículo registrado! Ya puedes iniciar rutas.", Toast.LENGTH_LONG).show()
+                        // El vehículo ya no queda aprobado al instante: pasa por el admin.
+                        // El estado se sigue en la pantalla de perfil del chofer.
+                        Toast.makeText(
+                            this@SolicitudChoferActivity,
+                            "Solicitud enviada. Un administrador debe revisarla antes de que puedas iniciar rutas.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         finish()
                     } else {
                         Toast.makeText(this@SolicitudChoferActivity, "Error al registrar el vehículo. Intenta de nuevo.", Toast.LENGTH_LONG).show()

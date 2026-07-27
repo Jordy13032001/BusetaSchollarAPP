@@ -48,9 +48,13 @@ class NotificacionesActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[PadreViewModel::class.java]
 
         // También aquí se avisa por notificación del sistema: el padre puede estar
-        // en esta pantalla justo cuando el chofer resuelve la solicitud.
+        // en esta pantalla justo cuando el chofer resuelve la solicitud. Y al llegar
+        // algo nuevo se resincroniza, para que la lista se actualice sola sin tener
+        // que salir y volver a entrar.
         NotificationHelper.createNotificationChannel(this)
-        poller = NotificacionPoller(this, parentEmail)
+        poller = NotificacionPoller(this, parentEmail) {
+            viewModel.sincronizarNotificaciones(parentEmail)
+        }
 
         if (parentEmail.isNotEmpty()) {
             // Room es la fuente de la UI: se actualiza sola en cuanto llegan datos nuevos
@@ -67,10 +71,19 @@ class NotificacionesActivity : AppCompatActivity() {
             Toast.makeText(this, "Error de sesión", Toast.LENGTH_SHORT).show()
         }
 
+        findViewById<android.widget.ImageButton>(R.id.btnRefrescarNotificaciones)
+            ?.setOnClickListener { refrescarManualmente() }
+
         NavigationUtils.setupPadreBottomNavigation(this)
         findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarNotificaciones)?.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+    }
+
+    private fun refrescarManualmente() {
+        if (parentEmail.isEmpty()) return
+        viewModel.sincronizarNotificaciones(parentEmail)
+        Toast.makeText(this, "Actualizando…", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {

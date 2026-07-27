@@ -10,5 +10,10 @@ data class NotificacionEntity(
     val titulo: String,
     val mensaje: String,
     val hora: String,
-    val tipo: String
+    val tipo: String,
+    // Solo llegan en las notificaciones de solicitud aceptada/rechazada: el padre
+    // los necesita para saber sobre qué hijo va a pagar o reenviar la solicitud.
+    val idEstudiante: Int? = null,
+    val nombreEstudiante: String? = null,
+    val estadoEstudiante: String? = null
 )

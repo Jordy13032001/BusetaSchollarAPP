@@ -134,7 +134,20 @@ data class NotificationResponse(
     val message: String,
     val timestamp: String,
     val type: String,
-    val parent_email: String
+    val parent_email: String,
+    // Solo vienen en las notificaciones de solicitud aceptada/rechazada
+    val id_estudiante: Int? = null,
+    val nombre_estudiante: String? = null,
+    val estado_estudiante: String? = null
+)
+
+// Reenvío de la solicitud de un hijo rechazado a otro chofer.
+// La dirección es opcional: si no se manda, el backend conserva la parada anterior.
+data class ReasignarRequest(
+    val correo_chofer: String,
+    val direccion: String? = null,
+    val lat: Double? = null,
+    val lng: Double? = null
 )
 
 data class IncidentRequest(
@@ -226,6 +239,13 @@ interface ApiService {
 
     @POST("estudiantes/{id}/rechazar")
     fun rechazarEstudiante(@Path("id") idEstudiante: Int): Call<ApiResponse>
+
+    // El padre reenvía a otro chofer la solicitud que le rechazaron
+    @PUT("estudiantes/{id}/reasignar")
+    fun reasignarEstudiante(
+        @Path("id") idEstudiante: Int,
+        @Body request: ReasignarRequest
+    ): Call<ApiResponse>
 
     // Ruta descriptiva del chofer
     @GET("colegios")

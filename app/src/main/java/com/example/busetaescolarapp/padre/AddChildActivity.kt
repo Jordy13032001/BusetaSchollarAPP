@@ -21,6 +21,7 @@ import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.ApiResponse
 import com.example.busetaescolarapp.network.EstudianteRequest
 import com.example.busetaescolarapp.network.ChoferResponse
+import com.example.busetaescolarapp.network.ReasignarRequest
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
@@ -28,6 +29,14 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class AddChildActivity : AppCompatActivity() {
+
+    companion object {
+        // Modo reenvío: el padre vuelve a esta pantalla para mandar la solicitud
+        // de un hijo ya existente (al que le rechazaron) a otro chofer.
+        const val EXTRA_REASIGNAR_ID = "extra_reasignar_id"
+        const val EXTRA_REASIGNAR_NOMBRE = "extra_reasignar_nombre"
+        const val EXTRA_REASIGNAR_DIRECCION = "extra_reasignar_direccion"
+    }
 
     private lateinit var rvChoferes: RecyclerView
     private lateinit var etNombreNino: TextInputEditText
@@ -39,6 +48,10 @@ class AddChildActivity : AppCompatActivity() {
     private var parentEmail: String = ""
     private var selectedLat: Double? = null
     private var selectedLng: Double? = null
+
+    // -1 = alta normal de un hijo nuevo; distinto de -1 = reenvío de una solicitud rechazada
+    private var reasignarIdEstudiante: Int = -1
+    private val esReenvio: Boolean get() = reasignarIdEstudiante != -1
 
     private val selectLocationLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -95,6 +108,29 @@ class AddChildActivity : AppCompatActivity() {
             }
             mostrarSeccionChoferes()
         }
+
+        configurarModoReenvio()
+    }
+
+    /**
+     * En reenvío el niño ya existe: sus datos vienen dados y solo falta escoger
+     * otro chofer, así que se salta el primer paso y se bloquean los campos.
+     */
+    private fun configurarModoReenvio() {
+        reasignarIdEstudiante = intent.getIntExtra(EXTRA_REASIGNAR_ID, -1)
+        if (!esReenvio) return
+
+        val nombre = intent.getStringExtra(EXTRA_REASIGNAR_NOMBRE).orEmpty()
+        val direccion = intent.getStringExtra(EXTRA_REASIGNAR_DIRECCION).orEmpty()
+
+        etNombreNino.setText(nombre)
+        etDireccion.setText(direccion)
+        etNombreNino.isEnabled = false
+        etDireccion.isEnabled = false
+        btnMapLocation.isEnabled = false
+
+        mostrarSeccionChoferes()
+        btnSiguiente.text = "Elige un nuevo chofer"
     }
 
 
@@ -140,7 +176,8 @@ class AddChildActivity : AppCompatActivity() {
         val childName = etNombreNino.text.toString().trim()
         val childAddress = etDireccion.text.toString().trim()
 
-        if (childName.isEmpty() || childAddress.isEmpty()) {
+        // En reenvío la dirección puede venir vacía: el backend conserva la parada anterior
+        if (childName.isEmpty() || (childAddress.isEmpty() && !esReenvio)) {
             Toast.makeText(this, "Llena los datos del niño primero", Toast.LENGTH_SHORT).show()
             return
         }
@@ -149,36 +186,73 @@ class AddChildActivity : AppCompatActivity() {
         val sectores = chofer.sectores?.takeIf { it.isNotBlank() }?.let { "\nSectores: $it" } ?: ""
 
         AlertDialog.Builder(this)
-            .setTitle("Solicitar cupo")
+            .setTitle(if (esReenvio) "Reenviar solicitud" else "Solicitar cupo")
             .setMessage(
                 "¿Enviar solicitud a ${chofer.nombre_completo} por $${chofer.tarifa_mensual} al mes " +
                     "para llevar a $childName?$ruta$sectores\n\nEl chofer debe aceptar la solicitud."
             )
             .setPositiveButton("Enviar solicitud") { _, _ ->
-                val request = EstudianteRequest(childName, childAddress, selectedLat, selectedLng, parentEmail, chofer.correo)
-
-                ApiClient.apiService.addEstudiante(request).enqueue(object : Callback<ApiResponse> {
-                    override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                        if (response.isSuccessful) {
-                            Toast.makeText(
-                                this@AddChildActivity,
-                                "Solicitud enviada. Espera que el chofer la acepte.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            setResult(Activity.RESULT_OK)
-                            finish()
-                        } else {
-                            Toast.makeText(this@AddChildActivity, "Error al guardar", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                        Toast.makeText(this@AddChildActivity, "Error de red: ${t.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
+                if (esReenvio) {
+                    reenviarSolicitud(chofer, childAddress)
+                } else {
+                    crearEstudiante(chofer, childName, childAddress)
+                }
             }
             .setNegativeButton("Cancelar", null)
             .show()
+    }
+
+    private fun crearEstudiante(chofer: ChoferResponse, childName: String, childAddress: String) {
+        val request = EstudianteRequest(childName, childAddress, selectedLat, selectedLng, parentEmail, chofer.correo)
+
+        ApiClient.apiService.addEstudiante(request).enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    finalizarConExito("Solicitud enviada. Espera que el chofer la acepte.")
+                } else {
+                    Toast.makeText(this@AddChildActivity, "Error al guardar", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Toast.makeText(this@AddChildActivity, "Error de red: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    /** Mueve al mismo estudiante a la ruta del nuevo chofer, sin duplicarlo. */
+    private fun reenviarSolicitud(chofer: ChoferResponse, childAddress: String) {
+        val request = ReasignarRequest(
+            correo_chofer = chofer.correo,
+            direccion = childAddress.takeIf { it.isNotEmpty() },
+            lat = selectedLat,
+            lng = selectedLng
+        )
+
+        ApiClient.apiService.reasignarEstudiante(reasignarIdEstudiante, request)
+            .enqueue(object : Callback<ApiResponse> {
+                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                    if (response.isSuccessful) {
+                        finalizarConExito("Solicitud reenviada a ${chofer.nombre_completo}.")
+                    } else {
+                        Toast.makeText(
+                            this@AddChildActivity,
+                            "No se pudo reenviar la solicitud",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Toast.makeText(this@AddChildActivity, "Error de red: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun finalizarConExito(mensaje: String) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show()
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 }
 

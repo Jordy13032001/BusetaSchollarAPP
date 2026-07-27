@@ -26,6 +26,10 @@
         <activity
             android:name=".padre.MapaRutaChoferActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".padre.PagoActivity"
+            android:exported="false" />
             
         <activity
             android:name=".padre.SelectLocationActivity"

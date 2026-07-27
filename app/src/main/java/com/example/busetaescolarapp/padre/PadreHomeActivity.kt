@@ -2,8 +2,6 @@ package com.example.busetaescolarapp.padre
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +18,6 @@ import com.example.busetaescolarapp.NotificationHelper
 import com.example.busetaescolarapp.R
 import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.EstudianteResponse
-import com.example.busetaescolarapp.network.NotificationResponse
 import com.example.busetaescolarapp.utils.SessionManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,7 +27,6 @@ class PadreHomeActivity : AppCompatActivity() {
 
     private var parentEmail: String = ""
     private var parentName: String = ""
-    private var lastNotificationId: Int = 0
     private var rvNinos: RecyclerView? = null
 
     private val detalleHijoLauncher = registerForActivityResult(
@@ -42,13 +38,7 @@ class PadreHomeActivity : AppCompatActivity() {
         }
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val notifRunnable = object : Runnable {
-        override fun run() {
-            verificarNotificacionesNuevas()
-            handler.postDelayed(this, 15_000L)
-        }
-    }
+    private var poller: NotificacionPoller? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,10 +54,8 @@ class PadreHomeActivity : AppCompatActivity() {
         parentEmail = sessionManager.getUserEmail() ?: ""
         parentName = sessionManager.getUserName() ?: "Padre"
 
-        lastNotificationId = getSharedPreferences("padre_prefs", MODE_PRIVATE)
-            .getInt("last_notification_id_$parentEmail", 0)
-
         NotificationHelper.createNotificationChannel(this)
+        poller = NotificacionPoller(this, parentEmail)
 
         findViewById<TextView>(R.id.tvGreeting)?.text = "¡Hola, $parentName!"
 
@@ -81,13 +69,13 @@ class PadreHomeActivity : AppCompatActivity() {
         super.onResume()
         if (parentEmail.isNotEmpty()) {
             cargarHijos()
-            handler.post(notifRunnable)
+            poller?.iniciar()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        handler.removeCallbacks(notifRunnable)
+        poller?.detener()
     }
 
     private fun cargarHijos() {
@@ -116,34 +104,6 @@ class PadreHomeActivity : AppCompatActivity() {
             })
     }
 
-    private fun verificarNotificacionesNuevas() {
-        if (parentEmail.isEmpty()) return
-        ApiClient.apiService.getNotifications(parentEmail)
-            .enqueue(object : Callback<List<NotificationResponse>> {
-                override fun onResponse(
-                    call: Call<List<NotificationResponse>>,
-                    response: Response<List<NotificationResponse>>
-                ) {
-                    val notifs = response.body()?.takeIf { response.isSuccessful } ?: return
-                    val nuevas = notifs.filter { it.id > lastNotificationId }
-                    nuevas.forEach { notif ->
-                        NotificationHelper.sendNotification(
-                            this@PadreHomeActivity,
-                            notif.title,
-                            notif.message
-                        )
-                    }
-                    if (nuevas.isNotEmpty()) {
-                        lastNotificationId = nuevas.maxOf { it.id }
-                        getSharedPreferences("padre_prefs", MODE_PRIVATE).edit()
-                            .putInt("last_notification_id_$parentEmail", lastNotificationId)
-                            .apply()
-                    }
-                }
-
-                override fun onFailure(call: Call<List<NotificationResponse>>, t: Throwable) {}
-            })
-    }
 }
 
 class NinoPadreAdapter(

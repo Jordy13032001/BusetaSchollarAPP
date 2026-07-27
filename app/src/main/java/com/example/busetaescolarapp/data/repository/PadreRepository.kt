@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.example.busetaescolarapp.data.local.AppDatabase
 import com.example.busetaescolarapp.data.local.IncidenteEntity
 import com.example.busetaescolarapp.data.local.NotificacionEntity
+import com.example.busetaescolarapp.data.local.PagoEntity
 import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.EstudianteResponse
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ class PadreRepository(context: Context) {
 
     private val notificacionDao = AppDatabase.getInstance(context).notificacionDao()
     private val incidenteDao = AppDatabase.getInstance(context).incidenteDao()
+    private val pagoDao = AppDatabase.getInstance(context).pagoDao()
 
     fun getParentChildren(email: String, onResult: (List<EstudianteResponse>?) -> Unit) {
         ApiClient.apiService.getParentChildren(email).enqueue(object : Callback<List<EstudianteResponse>> {
@@ -52,7 +54,10 @@ class PadreRepository(context: Context) {
                         titulo = it.title,
                         mensaje = it.message,
                         hora = formatearHoraLocal(it.timestamp),
-                        tipo = it.type
+                        tipo = it.type,
+                        idEstudiante = it.id_estudiante,
+                        nombreEstudiante = it.nombre_estudiante,
+                        estadoEstudiante = it.estado_estudiante
                     )
                 }
                 notificacionDao.deleteByPadre(email)
@@ -87,6 +92,19 @@ class PadreRepository(context: Context) {
         } catch (_: Exception) {
             // Sin conexión: se sigue mostrando la última copia guardada en Room
         }
+    }
+
+    // --- Pagos: solo locales (Room). El backend no tiene modelo de pagos, la
+    // pasarela es simulada y el comprobante le sirve únicamente al padre. ---
+
+    fun getPagosLocal(email: String): LiveData<List<PagoEntity>> = pagoDao.getByPadre(email)
+
+    suspend fun registrarPago(pago: PagoEntity): Long = withContext(Dispatchers.IO) {
+        pagoDao.insertar(pago)
+    }
+
+    suspend fun estaPagado(idEstudiante: Int): Boolean = withContext(Dispatchers.IO) {
+        pagoDao.getUltimoPagoDeEstudiante(idEstudiante) != null
     }
 
     // Convierte el timestamp UTC del backend (PostgreSQL NOW()) a la hora local del teléfono

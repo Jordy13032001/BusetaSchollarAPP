@@ -10,6 +10,11 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,4 +67,36 @@
             android:textColor="#757575"
             android:textSize="11sp" />
     </RelativeLayout>
+
+        <!-- Recuadro de acción: solo se muestra cuando el chofer resolvió la
+             solicitud de un hijo (proceder al pago o reenviar a otro chofer). -->
+        <LinearLayout
+            android:id="@+id/contenedorAccionNotificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#F5F5F5"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="14dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/txtAccionDescripcion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Descripción de la acción"
+                android:textColor="#616161"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAccionNotificacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Acción"
+                android:textAllCaps="false"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

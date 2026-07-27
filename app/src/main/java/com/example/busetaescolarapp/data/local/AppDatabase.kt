@@ -6,8 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [NotificacionEntity::class, IncidenteEntity::class, TramoEntity::class],
-    version = 2,
+    entities = [
+        NotificacionEntity::class,
+        IncidenteEntity::class,
+        TramoEntity::class,
+        PagoEntity::class
+    ],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -15,6 +20,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun notificacionDao(): NotificacionDao
     abstract fun incidenteDao(): IncidenteDao
     abstract fun tramoDao(): TramoDao
+    abstract fun pagoDao(): PagoDao
 
     companion object {
         @Volatile

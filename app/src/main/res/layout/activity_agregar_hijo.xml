@@ -20,6 +20,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="20dp">
@@ -29,83 +30,137 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Datos del Niño"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etNombreNino"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nombre completo"
-                    android:inputType="textPersonName" />
-            </com.google.android.material.textfield.TextInputLayout>
-
+            <!-- Paso 1: Datos del niño -->
             <LinearLayout
+                android:id="@+id/sectionDatosNino"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="Paso 1 de 2"
+                    android:textColor="#FBC02D"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Datos del Niño"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginBottom="12dp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etDireccion"
+                        android:id="@+id/etNombreNino"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Dirección o Barrio (Parada)"
-                        android:inputType="text" />
+                        android:hint="Nombre completo"
+                        android:inputType="textPersonName" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <ImageButton
-                    android:id="@+id/btnMapLocation"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="8dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_dialog_map"
-                    app:tint="#FBC02D" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDireccion"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Dirección o Barrio (Parada)"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageButton
+                        android:id="@+id/btnMapLocation"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_dialog_map"
+                        app:tint="#FBC02D" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSiguiente"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Siguiente: Elegir chofer"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    app:backgroundTint="#FBC02D"
+                    app:cornerRadius="12dp"
+                    app:icon="@android:drawable/ic_menu_directions"
+                    app:iconGravity="textEnd" />
+
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="Choferes Disponibles"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-                
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Selecciona un chofer para ver su tarifa y contratarlo."
-                android:textColor="#757575"
-                android:textSize="14sp" />
-
-            <!-- Lista de Choferes -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvChoferes"
+            <!-- Paso 2: Selección de chofer (oculto hasta que se complete el paso 1) -->
+            <LinearLayout
+                android:id="@+id/sectionChoferes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="20dp"
+                    android:background="#E0E0E0" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="Paso 2 de 2"
+                    android:textColor="#FBC02D"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="Elige un Chofer"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Selecciona un chofer para ver su tarifa y contratarlo."
+                    android:textColor="#757575"
+                    android:textSize="14sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvChoferes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

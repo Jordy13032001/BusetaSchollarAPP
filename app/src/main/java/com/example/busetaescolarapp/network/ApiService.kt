@@ -57,7 +57,7 @@ data class ChoferResponse(
     val id_chofer: Int,
     val nombre_completo: String,
     val correo: String,
-    val tarifa_mensual: Double,
+    val tarifa_mensual: Double?,
     val placa: String?,
     val modelo: String?,
     // Ruta que definió el chofer: el padre la revisa antes de contratarlo
@@ -84,8 +84,15 @@ data class RutaInfoRequest(
     val nombre: String,
     val turno: String,
     val sectores: String?,
-    val hora_salida: String?
+    val hora_salida: String?,
+    val id_colegio: Int? = null
 )
+
+data class ColegioResponse(
+    val id_colegio: Int,
+    val nombre: String
+)
+
 
 data class SolicitudResponse(
     val id_solicitud: Int,
@@ -221,6 +228,9 @@ interface ApiService {
     fun rechazarEstudiante(@Path("id") idEstudiante: Int): Call<ApiResponse>
 
     // Ruta descriptiva del chofer
+    @GET("colegios")
+    fun getColegios(): Call<List<ColegioResponse>>
+
     @GET("chofer/{correo}/ruta-info")
     fun getRutaInfo(@Path("correo") driverEmail: String): Call<RutaInfoResponse>
 

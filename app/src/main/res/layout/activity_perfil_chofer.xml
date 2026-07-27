@@ -186,6 +186,20 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Configurar ruta -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfigurarRuta"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="20dp"
+                android:text="Configurar mi ruta"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                app:backgroundTint="#F57F17"
+                app:cornerRadius="12dp"
+                app:icon="@android:drawable/ic_menu_directions"
+                app:iconGravity="textStart" />
+
             <!-- Tarjeta estado vehículo -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardVehiculo"

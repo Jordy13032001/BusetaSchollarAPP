@@ -2,32 +2,36 @@ package com.example.busetaescolarapp.chofer
 
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.RadioGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.busetaescolarapp.R
 import com.example.busetaescolarapp.data.repository.ChoferRepository
+import com.example.busetaescolarapp.network.ApiClient
+import com.example.busetaescolarapp.network.ColegioResponse
 import com.example.busetaescolarapp.network.RutaInfoRequest
 import com.example.busetaescolarapp.utils.SessionManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 
-/**
- * El chofer define su ruta (nombre, sectores, turno y horario). Es lo que el padre
- * consulta antes de contratarlo; las paradas reales salen de los estudiantes aceptados.
- */
 class DefinirRutaActivity : AppCompatActivity() {
 
     private lateinit var etNombre: TextInputEditText
     private lateinit var etSectores: TextInputEditText
     private lateinit var etHoraSalida: TextInputEditText
     private lateinit var rgTurno: RadioGroup
-    private lateinit var tvColegio: TextView
+    private lateinit var actvColegio: AutoCompleteTextView
 
     private val repository = ChoferRepository()
     private var driverEmail: String = ""
+    private var colegios: List<ColegioResponse> = emptyList()
+    private var selectedColegioId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +41,7 @@ class DefinirRutaActivity : AppCompatActivity() {
         etSectores = findViewById(R.id.etSectores)
         etHoraSalida = findViewById(R.id.etHoraSalida)
         rgTurno = findViewById(R.id.rgTurno)
-        tvColegio = findViewById(R.id.tvColegioRuta)
+        actvColegio = findViewById(R.id.actvColegio)
 
         driverEmail = SessionManager(this).getUserEmail() ?: ""
 
@@ -47,20 +51,46 @@ class DefinirRutaActivity : AppCompatActivity() {
         etHoraSalida.setOnClickListener { mostrarSelectorHora() }
         findViewById<MaterialButton>(R.id.btnGuardarRuta).setOnClickListener { guardar() }
 
-        if (driverEmail.isNotEmpty()) cargarRuta()
+        cargarColegios()
+    }
+
+    private fun cargarColegios() {
+        ApiClient.apiService.getColegios().enqueue(object : Callback<List<ColegioResponse>> {
+            override fun onResponse(call: Call<List<ColegioResponse>>, response: Response<List<ColegioResponse>>) {
+                if (response.isSuccessful) {
+                    colegios = response.body() ?: emptyList()
+                    val nombres = colegios.map { it.nombre }
+                    val adapter = ArrayAdapter(this@DefinirRutaActivity, android.R.layout.simple_dropdown_item_1line, nombres)
+                    actvColegio.setAdapter(adapter)
+                    actvColegio.setOnItemClickListener { _, _, position, _ ->
+                        selectedColegioId = colegios[position].id_colegio
+                    }
+                }
+                if (driverEmail.isNotEmpty()) cargarRuta()
+            }
+
+            override fun onFailure(call: Call<List<ColegioResponse>>, t: Throwable) {
+                Toast.makeText(this@DefinirRutaActivity, "Error al cargar colegios", Toast.LENGTH_SHORT).show()
+                if (driverEmail.isNotEmpty()) cargarRuta()
+            }
+        })
     }
 
     private fun cargarRuta() {
         repository.getRutaInfo(driverEmail) { info ->
-            if (info == null) {
-                Toast.makeText(this, "No se pudo cargar tu ruta", Toast.LENGTH_SHORT).show()
-                return@getRutaInfo
-            }
+            if (info == null) return@getRutaInfo
             etNombre.setText(info.nombre)
             etSectores.setText(info.sectores ?: "")
             etHoraSalida.setText(info.hora_salida ?: "")
             rgTurno.check(if (info.turno == "TARDE") R.id.rbTarde else R.id.rbManana)
-            tvColegio.text = "Colegio destino: ${info.colegio ?: "—"}"
+
+            val colegioActual = colegios.find { it.id_colegio == info.id_colegio }
+            if (colegioActual != null) {
+                actvColegio.setText(colegioActual.nombre, false)
+                selectedColegioId = colegioActual.id_colegio
+            } else if (info.colegio != null) {
+                actvColegio.setText(info.colegio, false)
+            }
         }
     }
 
@@ -81,12 +111,17 @@ class DefinirRutaActivity : AppCompatActivity() {
             etNombre.error = "Ponle un nombre a tu ruta"
             return
         }
+        if (selectedColegioId == null) {
+            Toast.makeText(this, "Selecciona el colegio destino", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val request = RutaInfoRequest(
             nombre = nombre,
             turno = if (rgTurno.checkedRadioButtonId == R.id.rbTarde) "TARDE" else "MANANA",
             sectores = etSectores.text?.toString()?.trim().orEmpty().ifEmpty { null },
-            hora_salida = etHoraSalida.text?.toString()?.trim().orEmpty().ifEmpty { null }
+            hora_salida = etHoraSalida.text?.toString()?.trim().orEmpty().ifEmpty { null },
+            id_colegio = selectedColegioId
         )
 
         repository.updateRutaInfo(driverEmail, request) { exito ->

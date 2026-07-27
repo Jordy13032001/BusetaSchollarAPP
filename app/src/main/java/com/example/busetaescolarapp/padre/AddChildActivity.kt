@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +21,7 @@ import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.ApiResponse
 import com.example.busetaescolarapp.network.EstudianteRequest
 import com.example.busetaescolarapp.network.ChoferResponse
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,6 +33,9 @@ class AddChildActivity : AppCompatActivity() {
     private lateinit var etNombreNino: TextInputEditText
     private lateinit var etDireccion: TextInputEditText
     private lateinit var btnMapLocation: ImageButton
+    private lateinit var btnSiguiente: MaterialButton
+    private lateinit var sectionChoferes: LinearLayout
+    private lateinit var scrollView: ScrollView
     private var parentEmail: String = ""
     private var selectedLat: Double? = null
     private var selectedLng: Double? = null
@@ -55,6 +61,9 @@ class AddChildActivity : AppCompatActivity() {
         etNombreNino = findViewById(R.id.etNombreNino)
         etDireccion = findViewById(R.id.etDireccion)
         btnMapLocation = findViewById(R.id.btnMapLocation)
+        btnSiguiente = findViewById(R.id.btnSiguiente)
+        sectionChoferes = findViewById(R.id.sectionChoferes)
+        scrollView = findViewById(R.id.scrollView)
 
         btnMapLocation.setOnClickListener {
             selectLocationLauncher.launch(Intent(this, SelectLocationActivity::class.java))
@@ -71,7 +80,33 @@ class AddChildActivity : AppCompatActivity() {
             return
         }
 
+        btnSiguiente.setOnClickListener {
+            val nombre = etNombreNino.text.toString().trim()
+            val direccion = etDireccion.text.toString().trim()
+            if (nombre.isEmpty()) {
+                etNombreNino.error = "Ingresa el nombre del niño"
+                etNombreNino.requestFocus()
+                return@setOnClickListener
+            }
+            if (direccion.isEmpty()) {
+                etDireccion.error = "Ingresa la dirección o barrio"
+                etDireccion.requestFocus()
+                return@setOnClickListener
+            }
+            mostrarSeccionChoferes()
+        }
+    }
+
+
+    private fun mostrarSeccionChoferes() {
+        sectionChoferes.visibility = View.VISIBLE
+        btnSiguiente.isEnabled = false
+        btnSiguiente.text = "Datos guardados ✓"
+        btnSiguiente.alpha = 0.7f
         loadChoferes()
+        scrollView.post {
+            scrollView.smoothScrollTo(0, sectionChoferes.top)
+        }
     }
 
     private fun loadChoferes() {
@@ -173,7 +208,7 @@ class ChoferAdapter(
         val chofer = choferes[position]
         holder.tvName.text = chofer.nombre_completo
         holder.tvEmail.text = chofer.correo
-        holder.tvPrice.text = "$${chofer.tarifa_mensual}"
+        holder.tvPrice.text = chofer.tarifa_mensual?.let { "$$it /mes" } ?: "Tarifa no definida"
         holder.tvBus.text = "Placa: ${chofer.placa ?: "N/A"} | ${chofer.modelo ?: ""}"
 
         holder.tvRuta.text = chofer.nombre_ruta ?: "Ruta sin definir"

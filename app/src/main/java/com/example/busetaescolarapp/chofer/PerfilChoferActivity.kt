@@ -13,6 +13,7 @@ import com.example.busetaescolarapp.R
 import com.example.busetaescolarapp.network.ApiClient
 import com.example.busetaescolarapp.network.EstadoVehiculoResponse
 import com.example.busetaescolarapp.padre.SolicitudChoferActivity
+import com.example.busetaescolarapp.chofer.DefinirRutaActivity
 import com.example.busetaescolarapp.utils.SessionManager
 import com.google.android.material.button.MaterialButton
 import retrofit2.Call
@@ -35,6 +36,10 @@ class PerfilChoferActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvChoferEmailCard).text = email
 
         NavigationUtils.setupChoferBottomNavigation(this)
+
+        findViewById<MaterialButton>(R.id.btnConfigurarRuta).setOnClickListener {
+            startActivity(Intent(this, DefinirRutaActivity::class.java))
+        }
 
         cargarEstadoVehiculo(email)
 
